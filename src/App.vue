@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+      <router-link to="/about">About</router-link> | 
+      <router-link to="/store">Store</router-link>
+    </div> -->
+    <lfa-nav></lfa-nav>
     <router-view/>
   </div>
 </template>
@@ -18,7 +20,15 @@
   margin-top: 60px;
 
   /* Default 12 column grid */
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  /* display: grid; */
+  /* grid-template-columns: repeat(12, 1fr); */
 }
 </style>
+
+<script>
+import LfaNav from './components/LfaNav'
+
+export default {
+  components: { LfaNav }
+}
+</script>

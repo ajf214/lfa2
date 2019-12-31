@@ -24,7 +24,7 @@ export default new Router({
     {
       path: '/store',
       name: 'store',
-      component: () => import('./view/Store.vue')
+      component: () => import('./views/Store.vue')
     }
   ]
 })

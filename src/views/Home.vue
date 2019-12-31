@@ -1,18 +1,18 @@
 <template>
   <div class="container">
-      <h1>Lawrence Farms Antiques</h1>
-      <img src="fleur-de-lis" />
+      <img class="image" src="../assets/logo-wide.png" />
 
       <div class="carousel"></div>
   </div>
 </template>
 
 <script>
+
 export default {
   name: 'home',
   data () {
     return {
-
+      items: []
     }
   }
 }
@@ -22,6 +22,10 @@ export default {
 
   @media screen and (max-width: 1000px) {
 
+  }
+
+  .image {
+    width: 100%;
   }
 
 </style>
