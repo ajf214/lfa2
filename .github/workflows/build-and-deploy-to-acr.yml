@@ -1,0 +1,31 @@
+name: Build and Deploy to ACR
+
+on: [push]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Prep version
+      run: git_hash=$(git rev-parse --short "$GITHUB_SHA")
+    
+    - name: 'Build'
+      run: docker-compose build
+    
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Azure CLI script
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.30.0
+        inlineScript: |
+          az account show
+          az storage -h     
+    
+    # Runs a single command using the runners shell
+    # - name: Send greeting
+    #   run: echo "Hello ${{ github.event.inputs.name }}"

@@ -1,6 +1,5 @@
 param baseName string = 'lfa'
 param location string = resourceGroup().location
-// param registryUrl string // = 'adotfrankpublic.azurecr.io'
 param logAnalyticsWorkspaceName string = 'lfa-logs'
 
 @allowed([

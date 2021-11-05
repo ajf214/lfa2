@@ -64,6 +64,7 @@
           "tags": {},
           "dependsOn": []
       }
+      // todo - convert to bicep
       // todo - add role assignment of key vault administrator
       // todo - create secret
       // todo - add ACR

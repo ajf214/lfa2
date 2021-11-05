@@ -9,7 +9,7 @@ services:
       context: ./lfa2
       args:
         - BUILD_MODE=build-dev # prod would be BUILD_MODE=build
-    image: lfa-front:0.1-dev # todo - tag should be managed by GHA
+    image: lfa-front:${git_hash} # todo - tag should be managed by GHA
     ports:
       - 80:80
     environment:
@@ -17,7 +17,7 @@ services:
   lfabackend:
     build: 
       context: ./lfa2-backend
-    image: lfa-back:0.1-dev # todo - tag should be managed by GHA
+    image: lfa-back:${git_hash} # todo - tag should be managed by GHA
     restart: always
     ports:
       - 3000:3000
