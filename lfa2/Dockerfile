@@ -9,6 +9,7 @@ RUN npm run $BUILD_MODE
 
 # production stage
 FROM nginx:stable-alpine as production-stage
+RUN ls -a
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 # custom nginx conf to work with vue router in HTML5 history mode
 COPY nginx-vue.conf /etc/nginx/conf.d/default.conf
