@@ -1,0 +1,30 @@
+# dev environment compose
+
+# note: common network is automatically created by docker
+
+version: '3'
+services:
+  lfafrontend: # container name
+    build: 
+      context: ./lfa2
+      args:
+        - BUILD_MODE=build-dev
+    image: lfa-front:0.1-dev
+    ports:
+      - 80:80
+    env:
+      - VUE_APP_BASE_URL=http://localhost:3001
+  lfabackend:
+    build: 
+      context: ./lfa2-backend
+    image: lfa-back:0.1-dev
+    restart: always
+    ports:
+      - 3000:3000
+    environment: 
+      - DB_USERNAME=sonofdiesel
+      - DB_PASSWORD=
+      - CLOUDINARY_API_SECRET=
+      - DB=LFA-DEV # would change to 'lfa' in prod
+      - IMAGE_FOLDER=lfa-items-test # would change to 'lfa-items' in prod
+      - GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b
