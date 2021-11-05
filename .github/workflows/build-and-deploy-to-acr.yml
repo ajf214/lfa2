@@ -11,15 +11,13 @@ jobs:
 
     - name: 'Get version'
       id: 'get-version'
-      run: | 
-        git_hash=$(git rev-parse --short "$GITHUB_SHA")
-        echo '::set-output name=GIT_HASH::\"$GITHUB_SHA\"'
+      run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
     
     - name: 'Build'
       env:
         LFA_DB_PASSWORD: ${{ secrets.LFA_DB_PASSWORD }}
         CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
-        GIT_HASH: ${{ steps.get-version.outputs.GIT_HASH }}
+        GIT_HASH: ${{ env.GITHUB_SHA_SHORT }}
       run: docker-compose build
     
     - name: Azure Login
