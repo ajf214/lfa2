@@ -62,7 +62,7 @@ module frontend 'http-container.bicep' = {
   name: '${baseName}-frontend-deploy'
   params: {
     containerAppName: '${baseName}-frontend'
-    containerImage: '${acr.properties.loginServer}/lfa/lfa-front:0.3' // needs to be full URI
+    containerImage: '${acr.properties.loginServer}/lfa/lfa-front:0.4' // needs to be full URI
     containerPort: 80
     containerRegistry: acr.properties.loginServer // full url, not just the resource name
     containerRegistryPassword: acr.listCredentials().username
@@ -82,13 +82,13 @@ module backend 'http-container.bicep' = {
   name: '${baseName}-backend-deploy'
   params: {
     containerAppName: '${baseName}-backend'
-    containerImage: '${acr.properties.loginServer}/lfa/lfa-back:0.1'
+    containerImage: '${acr.properties.loginServer}/lfa/lfa-back:0.4'
     containerPort: 3000
     containerRegistry: acr.properties.loginServer // NOTE: must be full URL, add @description
     containerRegistryPassword: acr.listCredentials().username
     containerRegistryUsername: acr.listCredentials().passwords[0].value
     environmentId: environment.id
-    isExternalIngress: false
+    isExternalIngress: true
     env: [
       {
         name: 'DB_USERNAME'
