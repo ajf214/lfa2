@@ -23,8 +23,8 @@ services:
       - 3000:3000
     environment: 
       - DB_USERNAME=sonofdiesel
-      - DB_PASSWORD=${lfa_db_password}
-      - CLOUDINARY_API_SECRET=${cloudinary_api_secret}
+      - DB_PASSWORD=${LFA_DB_PASSWORD}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - DB=LFA-DEV # would change to 'lfa' in prod
       - IMAGE_FOLDER=lfa-items-test # would change to 'lfa-items' in prod
       - GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b
