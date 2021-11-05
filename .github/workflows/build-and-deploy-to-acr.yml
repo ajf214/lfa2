@@ -31,7 +31,8 @@ jobs:
         azcliversion: 2.30.0
         inlineScript: |
           az account show
-          az storage -h     
+          docker tag lfa-front:$GITHUB_SHA_SHORT adotfrankpublic.azurecr.io/lfa/lfa-front:$GITHUB_SHA_SHORT
+          docker tag lfa-back:$GITHUB_SHA_SHORT adotfrankpublic.azurecr.io/lfa/lfa-back:$GITHUB_SHA_SHORT   
     
     # Runs a single command using the runners shell
     # - name: Send greeting
