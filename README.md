@@ -10,7 +10,7 @@ NOTE: Ensure your IP address is in the allow list for the SQL server.
 
 1. Run `npm install`
 1. Acquire secrets for: Azure SQL DB, Cloudinary Image CDN (currently in Key Vault)
-1. Add secrets to docker-compose.yaml
+1. Create local .env in root with secrets for docker-compose
 1. Run `docker-compose build`
 1. Run `docker-compose up`
 

@@ -8,23 +8,23 @@ services:
     build: 
       context: ./lfa2
       args:
-        - BUILD_MODE=build-dev
-    image: lfa-front:0.1-dev
+        - BUILD_MODE=build-dev # prod would be BUILD_MODE=build
+    image: lfa-front:0.1-dev # todo - tag should be managed by GHA
     ports:
       - 80:80
-    env:
-      - VUE_APP_BASE_URL=http://localhost:3001
+    environment:
+      - VUE_APP_BASE_URL=http://localhost:3000
   lfabackend:
     build: 
       context: ./lfa2-backend
-    image: lfa-back:0.1-dev
+    image: lfa-back:0.1-dev # todo - tag should be managed by GHA
     restart: always
     ports:
       - 3000:3000
     environment: 
       - DB_USERNAME=sonofdiesel
-      - DB_PASSWORD=
-      - CLOUDINARY_API_SECRET=
+      - DB_PASSWORD=${lfa_db_password}
+      - CLOUDINARY_API_SECRET=${cloudinary_api_secret}
       - DB=LFA-DEV # would change to 'lfa' in prod
       - IMAGE_FOLDER=lfa-items-test # would change to 'lfa-items' in prod
       - GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b

@@ -22,10 +22,6 @@ yarn-error.log*
 *.sln
 *.sw*
 
-# docker-compose for local development
-# use the template (docker-compose-template.yaml) and get the secrets yourself
-docker-compose.yaml
-docker-compose-prod.yaml
 npm-args-dev.txt
 deploy/*.parameters.json
 deploy/templates
