@@ -78,7 +78,7 @@ import LfaPager from "../components/LfaPager";
 import router from "../router";
 
 export default {
-  name: "Store",
+  name: "store-view",
   data() {
     return {
       items: [],

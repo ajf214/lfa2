@@ -36,8 +36,8 @@ import axios from "axios";
 import GoogleSignInButton from "vue-google-signin-button-directive";
 import AdminStoreItem from '../../components/AdminStoreItem.vue';
 
-const { OAuth2Client } = require("google-auth-library");
-const client = new OAuth2Client(process.env.VUE_APP_GSUITE_CLIENT_ID);
+// const { OAuth2Client } = require("google-auth-library");
+// const client = new OAuth2Client(process.env.VUE_APP_GSUITE_CLIENT_ID);
 
 export default {
   name: "AdminHome",
@@ -89,24 +89,24 @@ export default {
       );
       this.items = response.data;
     },
-    async OnGoogleAuthSuccess(idToken) {
-      // Receive the idToken and make your magic with the backend
+    // async OnGoogleAuthSuccess(idToken) {
+    //   // Receive the idToken and make your magic with the backend
 
-      const ticket = await client.verifyIdToken({
-        idToken: idToken,
-        // audience: process.env.GSUITE_CLIENT_ID,
-      });
-      const payload = ticket.getPayload();
+    //   // const ticket = await client.verifyIdToken({
+    //   //   idToken: idToken,
+    //   //   // audience: process.env.GSUITE_CLIENT_ID,
+    //   // });
+    //   // const payload = ticket.getPayload();
 
-      // committing user info will trigger loading the management panel
-      this.$store.commit("setUser", {
-        token: idToken,
-        userPayload: payload,
-      });
+    //   // committing user info will trigger loading the management panel
+    //   // this.$store.commit("setUser", {
+    //   //   token: idToken,
+    //   //   userPayload: payload,
+    //   // });
 
-      //backend should validate idToken before getting the list
-      this.loadData();
-    },
+    //   //backend should validate idToken before getting the list
+    //   this.loadData();
+    // },
     OnGoogleAuthFail(error) {
       console.log(error);
     },

@@ -16,6 +16,7 @@
   </div>
 
 </template>
+
 <style scoped>
   .about {
     display: grid; 
