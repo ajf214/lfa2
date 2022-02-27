@@ -5,7 +5,7 @@
     <!-- don't show nav if manage is in the path -->
     <router-view />
     <footer>
-      <p>Web Design by A+H</p>
+      <p>Built by A+H</p>
       <router-link class="navlink" to="/admin">Adminstrator</router-link>
     </footer>
   </div>
@@ -19,7 +19,10 @@
 /** Global variables for project */
 :root {
   --primary-brown: rgba(161, 91, 73, 1);
+  --subtle-brown: rgba(161, 91, 73, 0.7);
   --sold-red: #ad2626;
+  --subtle-gray: '';
+  --strong-gray: '';
 }
 
 * {
@@ -70,7 +73,7 @@ footer {
   margin: 120px 0 20px;
   display: flexbox;
   flex-direction: row;
-  color: rgba(150,150,150)
+  color: rgba(180,180,180);
 }
 
 footer p {
@@ -78,7 +81,7 @@ footer p {
 }
 
 footer a {
-  color: var(--primary-brown);
+  color: var(--subtle-brown);
   text-decoration: none;
 }
 

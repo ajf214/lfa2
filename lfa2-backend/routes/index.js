@@ -17,27 +17,14 @@ async function verify(token) {
 
   const userPayload = ticket.getPayload()
 
-  // check that they are auth'd to whatever the standard is
-  // should be jill or alex only
-  // if they are not verified I should send a 403
-  console.log("USER PAYLOAD")
-  console.log(userPayload)
-  console.log("---")
-  console.log(`User verified -- User: ${userPayload.name}`)
-
-  console.log("Checking if verified credentials qualify...")
-
   if (userPayload.hd !== 'lawrencefarmsantiques.com') {
     // todo - pretty sure this code is impossible to hit because the oauth client is internal only
     console.log("You are not a part of this organization or incorrect credentials provided")
-    // res.status(403).send(userPayload);
     return {
       verified: false,
       userPayload: userPayload
     }
   } else {
-    console.log("Valid credentials")
-    // res.send(userPayload)
     return {
       verified: true,
       userPayload: userPayload
@@ -53,6 +40,13 @@ router.options('*', cors())
 router.get('/', function (req, res, next) {
   res.send('LFA2 Backend -- Nothing has been requested')
 });
+
+router.get('/version', (req, res, next) => {
+  console.log(`/version -- ${process.env.GIT_HASH}`)
+  res.send({
+    gitHash: process.env.GIT_HASH
+  })
+})
 
 /* Do a GET to query the DB */
 router.get('/items', (req, res, next) => {
@@ -84,8 +78,6 @@ router.get('/items', (req, res, next) => {
     OFFSET ((@PageNumber - 1) * @RowspPage) 
     ROWS FETCH NEXT @RowspPage ROWS ONLY;`
   db.getData(query, results => {
-    // called after db request is done...
-    console.log(`successfully returned ${results.length} items`)
     res.send(results)
   })
 })
@@ -95,7 +87,6 @@ router.delete('/item/:image', (req, res, next) => {
   DELETE FROM dbo.StoreItems
   WHERE Image='${req.params.image}' 
   `
-  console.log(query)
 
   db.getData(query, results => {
     res.send(results)
@@ -113,8 +104,6 @@ router.get('/all-items', (req, res, next) => {
   from dbo.StoreItems
   ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""}`
   db.getData(query, results => {
-    console.log(`successfully returned:`)
-    console.log(results[0])
     res.send(results[0])
   })
 })
@@ -140,8 +129,6 @@ router.get('/latest-image-reference', (req, res, next) => {
 router.post('/token-signin', async (req, res, next) => {
   // decrypt token
   try {
-    console.log('Attempting to verify credentials...')
-    console.log(req.body)
     const result = await verify(req.body.token)
 
     if (result.verified) {
@@ -152,22 +139,15 @@ router.post('/token-signin', async (req, res, next) => {
   } catch (error) { console.log(error) }
 })
 
-// upload image to cloudinary and create item in DB
-// TODO - this needs to be an authenticated request!
 router.post('/item', async (req, res, next) => {
 
   // decrypt token
   try {
-    console.log('Attempting to verify credentials...')
-    console.log(req.body)
     await verify(req.body.token)
 
-    console.log('Attempting image upload...')
-    console.log(process.env.cloudinary_api_secret)
     // upload image to cloudinary    
     imageUploader.upload(req.body.cdnUrl, `${process.env.IMAGE_FOLDER}/${req.body.imageName}`, (result) => {
-      // callback after upload finishes (todo - successfully?)
-      console.log(result)
+      // callback after upload finishes (todo - successfully? no!)
 
       // todo - need to use a real date
       newQuery = `
@@ -185,24 +165,20 @@ router.post('/item', async (req, res, next) => {
       
           ELSE 
             INSERT dbo.StoreItems (ItemName, Url, Image, Sold, DateAdded) 
-          VALUES ('Random Dev Item abc', '${req.body.firstDibsUrl}', '${req.body.imageName}', '${req.body.sold}', '2020-06-01')
+          VALUES ('${req.body.name}', '${req.body.firstDibsUrl}', '${req.body.imageName}', '${req.body.sold}', '2020-06-01')
       
         COMMIT
       `
 
       // if successful, create item in db
-      // todo - how do I guard against SQL injection?
-      // query = `insert into dbo.StoreItems (ItemName, Url, Image, Sold, DateAdded) 
-      //   VALUES ('${req.body.name}', '${req.body.firstDibsUrl}', '${req.body.imageName}', '${req.body.sold}', '2020-03-15')`
-      console.log(newQuery)
+      // todo - how do I guard against SQL injection?ß
       db.getData(newQuery, results => {
-        console.log(results)
 
         // if there is an error in the results
         if (results.code === 'EREQUEST') {
           // todo - what if it is something besides a 400?
           // could hit a 403 if user was not verified..
-          console.log('im an error!')
+          console.log(results)
           res.status(400).send(results);
         }
 
@@ -219,8 +195,6 @@ router.post('/item/set-status', async (req, res, next) => {
 
   // decrypt token
   try {
-    console.log('Attempting to verify credentials...')
-    console.log(req.body)
     await verify(req.body.token)
 
     // todo - need to use a real date
@@ -237,13 +211,11 @@ router.post('/item/set-status', async (req, res, next) => {
           COMMIT`
 
     db.getData(newQuery, results => {
-      console.log(results)
-
       // if there is an error in the results
       if (results.code === 'EREQUEST') {
         // todo - what if it is something besides a 400?
         // could hit a 403 if user was not verified..
-        console.log('im an error!')
+        console.log(results)
         res.status(400).send(results);
       }
 

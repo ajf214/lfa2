@@ -4,8 +4,14 @@
       <span>{{ userPayload.name }}</span>
       <button class="sign-out">Sign out</button>
     </div>
+    <div class="version">
+      version: <a target="_blank" :href="`https://github.com/ajf214/lfa2/commit/${version}`">{{version}}</a>
+    </div>
     <h1 v-if="userToken !== null" class="title">Manage Items</h1>
-    <router-link v-if="userToken !== null" class="new-item button" :to="`/admin/manage-item`"
+    <router-link
+      v-if="userToken !== null"
+      class="new-item button"
+      :to="`/admin/manage-item`"
       ><i class="fa-solid fa-plus"></i> NEW ITEM</router-link
     >
     <div v-if="userToken !== null" class="main-content">
@@ -66,6 +72,7 @@ export default {
       sort: "recent",
       unsold: false,
       clientId: "1092000076053-gskfckaqihntrefibkmlce55n7dvul2b",
+      version: null
     };
   },
   computed: {
@@ -86,15 +93,22 @@ export default {
       },
     },
   },
-  beforeMount() {
+  async beforeMount() {
     // get ALL items - todo - should I get ALL or just a subset?
 
     // only get items if I am already auth'd
     if (this.userToken !== null) {
-      this.loadData();
+      await this.loadData();
+      await this.getVersion();
     }
   },
   methods: {
+    async getVersion(){
+      const response = await axios.get(
+        `${this.API_ENDPOINT}/version`
+      );
+      this.version = response.data.gitHash
+    },
     loadData: async function () {
       console.log(this.API_ENDPOINT);
 
@@ -104,13 +118,7 @@ export default {
       this.items = response.data;
     },
     async OnGoogleAuthSuccess(idToken) {
-      console.log(idToken);
       // Receive the idToken and make your magic with the backend
-
-      // pass id token to back end
-      // use google auth library to verify client
-      // TODO -- re-enable this once backend client verification is working
-      // https://developers.google.com/identity/sign-in/web/backend-auth -- this should be implemented in the backend
       const response = await axios.post(`${this.API_ENDPOINT}/token-signin`, {
         token: idToken,
       });
@@ -210,7 +218,7 @@ export default {
   width: max-content;
   justify-self: flex-end;
   align-self: flex-end;
-  font-family: 'Open Sans';
+  font-family: "Open Sans";
   border-radius: 2px;
   color: #666;
   border-color: #666;
@@ -254,6 +262,22 @@ export default {
   margin: auto;
 }
 
+.version {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #999;
+}
+
+.version a {
+  color: var(--primary-brown);
+  text-decoration: none;
+}
+
+.version a:hover {
+  text-decoration: underline;
+}
+
 @media screen and (min-width: 768px) {
   .main-content {
     grid-column: 3/-3;
@@ -268,7 +292,7 @@ export default {
   }
 
   .lfa-pager {
-   margin: 0 0;
-}
+    margin: 0 0;
+  }
 }
 </style>

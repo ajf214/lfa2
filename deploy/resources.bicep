@@ -118,6 +118,10 @@ module backend 'http-container.bicep' = {
         name: 'GSUITE_CLIENT_ID'
         value: '1092000076053-gskfckaqihntrefibkmlce55n7dvul2b'
       }
+      {
+        name: 'GIT_HASH'
+        value: gitHash
+      }
     ]
   }
 }
