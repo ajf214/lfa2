@@ -13,23 +13,38 @@
       >
         SOLD
       </div>
-      <div class="delete-button" @click="deleteItem">
+      <div v-if="!showModal" class="delete-button" @click="confirmDelete">
         <i class="fa-solid fa-trash"></i>
       </div>
     </div>
+    <lfa-modal v-if="showModal"
+      :infoMessage="modalData.infoMessage"
+      :confirmationText="modalData.confirmationText"
+      :discardText="modalData.discardText"
+      @confirm="deleteItem"
+      @discard="discardModal">
+    </lfa-modal>
   </div>
 </template>
 
 <script>
 /* eslint-disable */
 import axios from "axios";
+import LfaModal from "./LfaModal.vue"
 
 export default {
   name: "AdminStoreItem",
+  components: { LfaModal },
   props: ["item"],
   data() {
     return {
       rootImagePath: `https://res.cloudinary.com/dqbr44qlr/${process.env.VUE_APP_CLOUDINARY_DIR}`,
+      modalData: {
+        infoMessage: `Are you sure you want to delete "${this.item.ItemName}"?`,
+        confirmationText: 'Delete item',
+        discardText: 'Cancel'
+      },
+      showModal: false,
     };
   },
   methods: {
@@ -64,6 +79,12 @@ export default {
         console.log(error);
       }
     },
+    confirmDelete() {
+      this.showModal = true
+    },
+    discardModal() {
+      this.showModal = false
+    },
     async deleteItem() {
       // todo - should get a confirmatio that they want to delete
       try {
@@ -71,8 +92,9 @@ export default {
           `${this.API_ENDPOINT}/item/${this.item.Image}`
         );
         this.$emit("update-items");
-        console.log("got here");
+        this.showModal = false
       } catch (error) {
+        this.showModal = false
         console.log(error);
       }
     },

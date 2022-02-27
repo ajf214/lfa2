@@ -5,7 +5,12 @@
       <button class="sign-out">Sign out</button>
     </div>
     <div class="version">
-      version: <a target="_blank" :href="`https://github.com/ajf214/lfa2/commit/${version}`">{{version}}</a>
+      version:
+      <a
+        target="_blank"
+        :href="`https://github.com/ajf214/lfa2/commit/${version}`"
+        >{{ version }}</a
+      >
     </div>
     <h1 v-if="userToken !== null" class="title">Manage Items</h1>
     <router-link
@@ -72,7 +77,7 @@ export default {
       sort: "recent",
       unsold: false,
       clientId: "1092000076053-gskfckaqihntrefibkmlce55n7dvul2b",
-      version: null
+      version: null,
     };
   },
   computed: {
@@ -98,16 +103,14 @@ export default {
 
     // only get items if I am already auth'd
     if (this.userToken !== null) {
-      await this.loadData();
       await this.getVersion();
+      await this.loadData();
     }
   },
   methods: {
-    async getVersion(){
-      const response = await axios.get(
-        `${this.API_ENDPOINT}/version`
-      );
-      this.version = response.data.gitHash
+    async getVersion() {
+      const response = await axios.get(`${this.API_ENDPOINT}/version`);
+      this.version = response.data.gitHash;
     },
     loadData: async function () {
       console.log(this.API_ENDPOINT);

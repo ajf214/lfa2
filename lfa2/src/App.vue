@@ -20,7 +20,8 @@
 :root {
   --primary-brown: rgba(161, 91, 73, 1);
   --subtle-brown: rgba(161, 91, 73, 0.7);
-  --sold-red: #ad2626;
+  --sold-red: rgb(173, 38, 38);
+  --subtle-sold-red: rgb(173, 38, 38, 0.6);
   --subtle-gray: '';
   --strong-gray: '';
 }
