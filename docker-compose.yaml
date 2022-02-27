@@ -1,0 +1,34 @@
+# dev environment compose
+
+# note: common network is automatically created by docker
+
+version: '3'
+services:
+  
+  lfafrontend: # container name
+    build: 
+      context: ./lfa2
+      args:
+        - BUILD_MODE=build
+    # to run docker-compose build, must expose "GIT_HASH" environment variable, I usually put "latest"
+    image: lfa-front:${GIT_HASH}
+    ports:
+      - 80:80
+    environment:
+      - VUE_APP_BASE_URL=http://localhost:3000
+  
+  lfabackend:
+    build: 
+      context: ./lfa2-backend
+    image: lfa-back:${GIT_HASH}
+    restart: always
+    ports:
+      - 3000:3000
+    environment: 
+      - DB_USERNAME=sonofdiesel
+      # must expose both of these environment variables
+      - DB_PASSWORD=${LFA_DB_PASSWORD}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - DB=LFA # LFA | LFA-DEV
+      - IMAGE_FOLDER=lfa-items # lfa-items | lfa-items-test
+      - GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b

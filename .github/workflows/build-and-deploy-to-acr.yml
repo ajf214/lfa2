@@ -1,0 +1,50 @@
+name: Build and Deploy to ACR
+
+on: [push]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Get version'
+      id: 'get-version'
+      run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-6)" >> $GITHUB_ENV
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}    
+
+    - name: Login to ACR
+      uses: docker/login-action@v1
+      with:
+        registry: adotfrankpublic.azurecr.io
+        username: adotfrankpublic
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: 'Build with docker-compose and push to ACR'
+      env:
+        LFA_DB_PASSWORD: ${{ secrets.LFA_DB_PASSWORD }}
+        CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        GIT_HASH: ${{ env.GITHUB_SHA_SHORT }}
+      run: | 
+        docker-compose build
+        docker tag lfa-front:$GITHUB_SHA_SHORT adotfrankpublic.azurecr.io/lfa/lfa-front:$GITHUB_SHA_SHORT
+        docker tag lfa-back:$GITHUB_SHA_SHORT adotfrankpublic.azurecr.io/lfa/lfa-back:$GITHUB_SHA_SHORT
+        docker push adotfrankpublic.azurecr.io/lfa/lfa-front:$GITHUB_SHA_SHORT
+        docker push adotfrankpublic.azurecr.io/lfa/lfa-back:$GITHUB_SHA_SHORT
+      
+    # deploy container app with updated images
+    - name: 'Deploy container app with bicep with updated images'
+      uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: d56e652e-758d-480a-8f0d-47f230264b4c
+        resourceGroupName: lfa-container-apps
+        template: ./deploy/main.bicep
+        parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
+        scope: subscription
+        region: eastus
+        failOnStdErr: false

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lfa-back
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: lfa-back
+  template:
+    metadata:
+      labels:
+        app: lfa-back
+    spec:
+      containers:
+      - name: lfa-back
+        image: adotfrank/lfa2-backend:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        ports:
+        - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lfa-back
+  annotations: 
+    service.beta.kubernetes.io/azure-load-balancer-resource-group: MC_aks-test_aks-test-01_eastus
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 3000
+  selector:
+    app: lfa-back
+  # Static IP from PIP in managed RG in same region as LB
+  # PIP should NOT be associated with LB or there will be an error
+  loadBalancerIP: 52.149.207.137
