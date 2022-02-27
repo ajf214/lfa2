@@ -42,7 +42,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
 // this will be the target of the individual container apps
 // shared networking
 resource environment 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
-  name: '${baseName}-environment-deploy'
+  name: '${baseName}-environment-deploy-02'
   location: location
   properties: {
     #disable-next-line BCP037
@@ -87,7 +87,7 @@ module backend 'http-container.bicep' = {
     containerAppName: '${baseName}-backend'
     containerImage: '${acr.properties.loginServer}/lfa/lfa-back:${gitHash}'
     containerPort: 3000
-    containerRegistry: acr.properties.loginServer // NOTE: must be full URL, add @description
+    containerRegistry: acr.properties.loginServer // TODO: must be full URL, add @description
     containerRegistryPassword: acr.listCredentials().username
     containerRegistryUsername: acr.listCredentials().passwords[0].value
     environmentId: environment.id
