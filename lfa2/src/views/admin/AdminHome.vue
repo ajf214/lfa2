@@ -170,6 +170,11 @@ export default {
 
 .no-auth-container {
   grid-column: 3/11;
+  max-width: 500px;
+  margin: auto;
+  text-align: center;
+  line-height: 130%;
+  margin-top: 100px;
 }
 
 .signed-in-nav {
@@ -241,7 +246,7 @@ export default {
   height: 50px;
   font-size: 16px;
   padding: 10px 20px 10px 20px;
-  margin-top: 100px;
+  margin-top: 20px;
 }
 
 .google-signin-button:hover {

@@ -1,7 +1,7 @@
 <template>
   <div class="background-shade">
     <div class="modal-container">
-      <span>{{ infoMessage }}</span>
+      <p>{{ infoMessage }}</p>
       <div class="actions">
         <button class="confirm" @click="confirm">{{ confirmationText }}</button>
         <button @click="discard">{{ discardText }}</button>
