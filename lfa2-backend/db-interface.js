@@ -48,14 +48,10 @@ module.exports =  class Db {
     this.connection.on('debug', debug);
   }
 
-  getData(query, callback) {
-    this.exec(query, callback)
-  }
-
-  exec(sql, callback) {
-    sql = sql.toString();
-
-    let request = new Request(sql, (err, rowCount, rows) => {
+  constructRequest(parameterizedQuery) {
+    parameterizedQuery = parameterizedQuery.toString()
+    
+    let request = new Request(parameterizedQuery, (err, rowCount, rows) => {
       if (err) {
         console.log('Statement failed: ' + err);
         callback(err)
@@ -65,6 +61,27 @@ module.exports =  class Db {
         callback(results)
       }
     })
+
+    return request
+  }
+
+  getData(query, callback, request) {
+    this.exec(query, callback, request)
+  }
+  
+  exec(request, callback) {
+    //sql = sql.toString();
+
+    // let request = new Request(sql, (err, rowCount, rows) => {
+    //   if (err) {
+    //     console.log('Statement failed: ' + err);
+    //     callback(err)
+    //   } else {
+    //     // handle results of the request
+    //     const results = processResults(rows)
+    //     callback(results)
+    //   }
+    // })
     request.on('columnMetadata', columnMetadata);
     request.on('row', row);
   

@@ -66,10 +66,11 @@ router.get('/items', (req, res, next) => {
   if (unsold === undefined) {
     unsold = "false"
   }
+
   const dbSort = sort === "recent" ? "Image" : "ItemName"
   query = `
     DECLARE @PageNumber AS INT, @RowspPage AS INT 
-    SET @PageNumber = ${page} 
+    SET @PageNumber = @p_page
     SET @RowspPage = 18 
     SELECT ItemName, Url, CAST(Image AS INT) AS Image, Sold 
     FROM dbo.StoreItems 
@@ -77,7 +78,11 @@ router.get('/items', (req, res, next) => {
     ORDER BY ${dbSort} ${dbSort === "ItemName" ? "asc" : "desc"} 
     OFFSET ((@PageNumber - 1) * @RowspPage) 
     ROWS FETCH NEXT @RowspPage ROWS ONLY;`
-  db.getData(query, results => {
+  
+  const request = db.constructRequest(query)
+  request.addParameter(query, 'int', page)
+  
+  db.getData(request, results => {
     res.send(results)
   })
 })
