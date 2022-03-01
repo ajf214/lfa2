@@ -35,12 +35,12 @@ export default new Router({
       name: 'admin',
       component: () => import('./views/admin/AdminHome.vue')
     },
-    {
-      path: '/admin/manage-item/:itemNumber*',
-      name: 'addEditItem',
-      component: () => import('./views/admin/AddEditItem.vue'),
-      props: true
-    },
+    // {
+    //   path: '/admin/manage-item/:itemNumber*',
+    //   name: 'addEditItem',
+    //   component: () => import('./views/admin/AddEditItem.vue'), // TODO -- this route takes precedent over confirmation...
+    //   props: true
+    // },
     {
       path: '/admin/manage-item/confirmation',
       name: 'addConfirmation',

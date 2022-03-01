@@ -57,8 +57,9 @@ export default {
           this.cdnUrl = response.data.cdnUrl
       },
       async submitItem () {
+          console.log('called submitItem')
           try {
-            let imageName = parseInt(this.itemForEdit.Image)
+            let imageName = parseInt(this.item.Image)
             
             // only increment if this is a new item
             if (this.itemForEdit === undefined) {
@@ -70,6 +71,7 @@ export default {
 
             // upload image to cloudinary then
             // post request with item contents (name, imageNumber, sold, url)
+            console.log('calling api')
             await axios.post(`${this.API_ENDPOINT}/item`, { // todo - I think the ID should be in the POST url
               name: this.name,
               imageName: imageName,
@@ -83,7 +85,7 @@ export default {
             console.log('successfully added item')
             this.$router.push('/admin/manage-item/confirmation')
           } catch (e) {
-            // show some red stuff on the page depending on the error
+            console.log(e)
           }
       }
   },
@@ -103,7 +105,7 @@ export default {
 <style scoped>
 
 img {
-    width: 300px;
+  width: 300px;
 }
 
 .add-item-container {

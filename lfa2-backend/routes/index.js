@@ -7,6 +7,7 @@ const firstDibsScraper = require('../first-dibs-scraper')
 const imageUploader = require('../image-uploader')
 require('dotenv').config()
 const TYPES = require('tedious').TYPES
+//const SqlString = require('sqlstring')
 
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.GSUITE_CLIENT_ID)
@@ -204,7 +205,7 @@ router.post('/item', async (req, res, next) => {
       request.addParameter('p_name', TYPES.NVarChar, req.body.name)
       request.addParameter('p_firstDibsUrl', TYPES.NVarChar, req.body.firstDibsUrl)
       request.addParameter('p_imageName', TYPES.NVarChar, req.body.imageName)
-      request.addParameter('P_sold', TYPES.NVarChar, req.body.sold)
+      request.addParameter('p_sold', TYPES.NVarChar, req.body.sold)
 
       // if successful, create item in db
       // todo - how do I guard against SQL injection?ß
