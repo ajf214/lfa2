@@ -35,14 +35,15 @@ export default new Router({
       name: 'admin',
       component: () => import('./views/admin/AdminHome.vue')
     },
-    // {
-    //   path: '/admin/manage-item/:itemNumber*',
-    //   name: 'addEditItem',
-    //   component: () => import('./views/admin/AddEditItem.vue'), // TODO -- this route takes precedent over confirmation...
-    //   props: true
-    // },
     {
-      path: '/admin/manage-item/confirmation',
+      path: '/admin/manage-item', // /:itemNumber*',
+      name: 'addEditItem',
+      component: () => import('./views/admin/AddEditItem.vue'), // TODO -- this route takes precedent over confirmation...
+      props: true,
+      children: [] // todo -- wanted to have the route /admin/manage-item/confirmation, but couldn't get the route to match properly
+    },
+    {
+      path: '/admin/confirmation',
       name: 'addConfirmation',
       component: () => import('./views/admin/CreateSuccess.vue')
     },

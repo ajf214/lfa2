@@ -1,6 +1,8 @@
 <template>
   <a :href="item.Url" target="_blank" class="item-container">
-    <div v-if="item.Sold === 'isSold'" class="sold-tag">SOLD</div>
+    <div :class="{unsold: item.Sold !== 'isSold'}" class="sold-tag">
+      SOLD
+    </div>
     <img v-if="item.Image === 999" :src="`${rootImagePath}/1.jpg`" />
     <img
       v-else-if="item.Image.toString().length < 5"
@@ -68,7 +70,12 @@ img {
   margin-right: 4px;
   background-color: var(--sold-red);
   color: white;
-  padding: 10px;
-  position: relative;
+  padding: 10px 9px 7px 10px;
+  border: 1px solid var(--sold-red);
+  border-radius: 1px; 
+}
+
+.unsold {
+  visibility: hidden;
 }
 </style>
