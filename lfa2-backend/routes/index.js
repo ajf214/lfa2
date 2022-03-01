@@ -6,6 +6,7 @@ const db = new dbInterface()
 const firstDibsScraper = require('../first-dibs-scraper')
 const imageUploader = require('../image-uploader')
 require('dotenv').config()
+var TYPES = require('tedious').TYPES
 
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.GSUITE_CLIENT_ID)
@@ -79,9 +80,10 @@ router.get('/items', (req, res, next) => {
     OFFSET ((@PageNumber - 1) * @RowspPage) 
     ROWS FETCH NEXT @RowspPage ROWS ONLY;`
   
-  const request = db.constructRequest(query)
-  request.addParameter(query, 'int', page)
-  
+  const request = db.constructRequest(query, results => {
+    res.send(results)
+  })
+  request.addParameter('p_page', TYPES.Int, page)
   db.getData(request, results => {
     res.send(results)
   })
@@ -90,12 +92,15 @@ router.get('/items', (req, res, next) => {
 router.delete('/item/:image', (req, res, next) => {
   query = `
   DELETE FROM dbo.StoreItems
-  WHERE Image='${req.params.image}' 
+  WHERE Image=@p_image 
   `
 
-  db.getData(query, results => {
+  const request = db.constructRequest(query, results => {
     res.send(results)
   })
+  request.addParameter('p_image', TYPES.NVarChar, req.params.image)
+
+  db.getData(request)
 })
 
 // returns COUNT of all items in db, used to calculate number of pages
@@ -108,9 +113,12 @@ router.get('/all-items', (req, res, next) => {
   query = `select count(*) as ItemCount 
   from dbo.StoreItems
   ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""}`
-  db.getData(query, results => {
+  
+  const request = db.constructRequest(query, results => {
     res.send(results[0])
   })
+  
+  db.getData(request)
 })
 
 router.get('/get-hero-image', async (req, res, next) => {
@@ -126,9 +134,11 @@ router.get('/get-hero-image', async (req, res, next) => {
 
 router.get('/latest-image-reference', (req, res, next) => {
   const query = `select top(1) * from dbo.StoreItems ORDER BY CONVERT(int, Image) desc`
-  db.getData(query, results => {
+  
+  const request = db.constructRequest(query, results => {
     res.send(results[0])
   })
+  db.getData(request)
 })
 
 router.post('/token-signin', async (req, res, next) => {
@@ -155,29 +165,27 @@ router.post('/item', async (req, res, next) => {
       // callback after upload finishes (todo - successfully? no!)
 
       // todo - need to use a real date
-      newQuery = `
+      const newQuery = `
         SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
         BEGIN TRAN
       
-          IF EXISTS ( SELECT * FROM dbo.StoreItems WITH (UPDLOCK) WHERE ItemName = '${req.body.name}' )
+          IF EXISTS ( SELECT * FROM dbo.StoreItems WITH (UPDLOCK) WHERE ItemName = @p_name )
       
             UPDATE dbo.StoreItems
-              SET Url='${req.body.firstDibsUrl}', 
-               Image='${req.body.imageName}', 
-               Sold='${req.body.sold}', 
+              SET Url=@p_firstDibsUrl, 
+               Image=@p_imageName, 
+               Sold=@p_sold, 
                DateAdded='2020-06-01'
-            WHERE ItemName = '${req.body.name}';
+            WHERE ItemName = @p_name;
       
           ELSE 
             INSERT dbo.StoreItems (ItemName, Url, Image, Sold, DateAdded) 
-          VALUES ('${req.body.name}', '${req.body.firstDibsUrl}', '${req.body.imageName}', '${req.body.sold}', '2020-06-01')
+          VALUES (@p_name, @p_firstDibsUrl, @p_imageName, @p_sold, '2020-06-01')
       
         COMMIT
       `
 
-      // if successful, create item in db
-      // todo - how do I guard against SQL injection?ß
-      db.getData(newQuery, results => {
+      const request = db.constructRequest(newQuery, results => {
 
         // if there is an error in the results
         if (results.code === 'EREQUEST') {
@@ -192,6 +200,15 @@ router.post('/item', async (req, res, next) => {
           res.send(results)
         }
       })
+
+      request.addParameter('p_name', TYPES.NVarChar, req.body.name)
+      request.addParameter('p_firstDibsUrl', TYPES.NVarChar, req.body.firstDibsUrl)
+      request.addParameter('p_imageName', TYPES.NVarChar, req.body.imageName)
+      request.addParameter('P_sold', TYPES.NVarChar, req.body.sold)
+
+      // if successful, create item in db
+      // todo - how do I guard against SQL injection?ß
+      db.getData(request)
     })
   } catch (error) { console.log(error) }
 })
@@ -202,20 +219,24 @@ router.post('/item/set-status', async (req, res, next) => {
   try {
     await verify(req.body.token)
 
-    // todo - need to use a real date
-    newQuery = `
+    const query = `
           SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
           BEGIN TRAN
         
-            IF EXISTS ( SELECT * FROM dbo.StoreItems WITH (UPDLOCK) WHERE ItemName = '${req.body.name}' )
+            IF EXISTS ( SELECT * FROM dbo.StoreItems WITH (UPDLOCK) WHERE ItemName = @p_name )
         
               UPDATE dbo.StoreItems
-                SET Sold='${req.body.newStatus}'
-              WHERE ItemName = '${req.body.name}';
+                SET Sold=@p_newStatus
+              WHERE ItemName = @p_name;
                 
           COMMIT`
 
-    db.getData(newQuery, results => {
+    /*
+    ${req.body.name}
+    ${req.body.newStatus}
+    ${req.body.name}
+    */
+    const request = db.constructRequest(query, results => {
       // if there is an error in the results
       if (results.code === 'EREQUEST') {
         // todo - what if it is something besides a 400?
@@ -229,6 +250,12 @@ router.post('/item/set-status', async (req, res, next) => {
         res.send(results)
       }
     })
+
+    request.addParameter('p_name', TYPES.NVarChar, req.body.name)
+    request.addParameter('p_newStatus', TYPES.NVarChar, req.body.newStatus)
+    
+    db.getData(request)
+
   } catch (error) { console.log(error) }
 })
 
