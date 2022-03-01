@@ -6,7 +6,7 @@ const db = new dbInterface()
 const firstDibsScraper = require('../first-dibs-scraper')
 const imageUploader = require('../image-uploader')
 require('dotenv').config()
-var TYPES = require('tedious').TYPES
+const TYPES = require('tedious').TYPES
 
 const { OAuth2Client } = require('google-auth-library')
 const client = new OAuth2Client(process.env.GSUITE_CLIENT_ID)
