@@ -5,7 +5,7 @@
         <div :key="index" v-for="index in imagesCount">
           <img
             class="slider-image"
-            :src="require(`@/assets/homepage-slider/wide-0${index + 1}.png`)"
+            :src="`${rootImagePath}/w_1300,c_scale/lfa-slider/wide-0${index+1}.png`"
           />
         </div>
       </div>
@@ -16,7 +16,7 @@
         <div :key="index" v-for="index in imagesCount">
           <img
             class="slider-image"
-            :src="require(`@/assets/homepage-slider/narrow-0${index + 1}.png`)"
+            :src="`${rootImagePath}/w_800,c_scale/lfa-slider/narrow-0${index+1}.png`"
           />
         </div>
       </div>
@@ -39,7 +39,8 @@ export default {
     return {
       imagesCount: 5,
       windowWidth: window.innerWidth,
-      isWide: true
+      isWide: true,
+      rootImagePath: 'https://res.cloudinary.com/dqbr44qlr/image/upload'
     };
   },
   watch: {

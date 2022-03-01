@@ -47,7 +47,7 @@ export default {
   display: flex;
   flex-direction: column;
   flex-basis: content;
-  padding: 10px 10px;
+  padding: 20px;
 }
 
 .modal-container span {
@@ -67,14 +67,14 @@ export default {
 }
 
 .confirm {
-  background-color: var(--subtle-sold-red);
-  border-color: var(--subtle-sold-red);
+  background-color: var(--sold-red);
+  border-color: var(--sold-red);
   color: white;
 }
 
 .confirm:hover {
-  border-color: var(--sold-red);
-  background-color: var(--sold-red);
+  border-color: var(--subtle-sold-red);
+  background-color: var(--subtle-sold-red);
 }
 
 @media screen and (min-width: 768px) {
