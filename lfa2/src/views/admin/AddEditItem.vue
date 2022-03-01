@@ -83,7 +83,7 @@ export default {
 
             // take me to a confirmation page
             console.log('successfully added item')
-            this.$router.push('/admin/manage-item/confirmation')
+            this.$router.push('/admin/confirmation')
           } catch (e) {
             console.log(e)
           }

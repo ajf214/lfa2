@@ -39,11 +39,11 @@ export default {
   data() {
     return {
       rootImagePath: `https://res.cloudinary.com/dqbr44qlr/${process.env.VUE_APP_CLOUDINARY_DIR}`,
-      modalData: {
-        infoMessage: `Are you sure you want to delete "${this.item.ItemName}"?`,
-        confirmationText: 'Delete item',
-        discardText: 'Cancel'
-      },
+      // modalData: {
+      //   infoMessage: `Are you sure you want to delete "${this.item.ItemName}"?`,
+      //   confirmationText: 'Delete item',
+      //   discardText: 'Cancel'
+      // },
       showModal: false,
     };
   },
@@ -99,6 +99,15 @@ export default {
       }
     },
   },
+  computed: {
+    modalData() {
+      return {
+        infoMessage: `Are you sure you want to delete "${this.item.ItemName}"?`,
+        confirmationText: 'Delete item',
+        discardText: 'Cancel'
+      }
+    }
+  }
 };
 </script>
 
@@ -178,9 +187,9 @@ h4 {
 }
 
 .isSold:hover {
-  background-color: white;
-  color: black;
-  border: 1px solid black;
+  background-color: var(--subtle-sold-red);
+  border: 1px solid var(--subtle-sold-red);
+  color: white;
 }
 
 .delete-button {

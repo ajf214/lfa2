@@ -4,7 +4,7 @@
       <span>{{ userPayload.name }}</span>
       <button class="sign-out">Sign out</button>
     </div>
-    <div class="version">
+    <div v-if="userToken !== null" class="version">
       version:
       <a
         target="_blank"
@@ -137,6 +137,7 @@ export default {
       // only load data once the user has been set and verified as authentic
       // should I check this again??
       this.loadData();
+      this.getVersion();
     },
     OnGoogleAuthFail(error) {
       console.log(error);
