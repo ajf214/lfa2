@@ -69,7 +69,7 @@ router.get('/items', (req, res, next) => {
   }
 
   const dbSort = sort === "recent" ? "Image" : "ItemName"
-  query = `
+  const query = `
     DECLARE @PageNumber AS INT, @RowspPage AS INT 
     SET @PageNumber = @p_page
     SET @RowspPage = 18 
@@ -90,7 +90,7 @@ router.get('/items', (req, res, next) => {
 })
 
 router.delete('/item/:image', (req, res, next) => {
-  query = `
+  const query = `
   DELETE FROM dbo.StoreItems
   WHERE Image=@p_image 
   `
@@ -110,7 +110,7 @@ router.get('/all-items', (req, res, next) => {
     unsold === "false"
   }
 
-  query = `select count(*) as ItemCount 
+  const query = `select count(*) as ItemCount 
   from dbo.StoreItems
   ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""}`
   
