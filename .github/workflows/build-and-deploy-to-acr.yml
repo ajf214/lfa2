@@ -47,7 +47,7 @@ jobs:
         subscriptionId: d56e652e-758d-480a-8f0d-47f230264b4c
         resourceGroupName: lfa-container-apps
         template: ./deploy/main.bicep
-        parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=dev
+        parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
         scope: subscription
         region: eastus
         failOnStdErr: false
