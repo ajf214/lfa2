@@ -1,5 +1,6 @@
 var Connection = require('tedious').Connection
 var Request = require('tedious').Request
+
 // var fs = require('fs')
 require('dotenv').config()
 
@@ -48,14 +49,10 @@ module.exports =  class Db {
     this.connection.on('debug', debug);
   }
 
-  getData(query, callback) {
-    this.exec(query, callback)
-  }
-
-  exec(sql, callback) {
-    sql = sql.toString();
-
-    let request = new Request(sql, (err, rowCount, rows) => {
+  constructRequest(parameterizedQuery, callback) {
+    parameterizedQuery = parameterizedQuery.toString()
+    
+    let request = new Request(parameterizedQuery, (err, rowCount, rows) => {
       if (err) {
         console.log('Statement failed: ' + err);
         callback(err)
@@ -65,11 +62,15 @@ module.exports =  class Db {
         callback(results)
       }
     })
-    request.on('columnMetadata', columnMetadata);
-    request.on('row', row);
+    
+    return request
+  }
+
+  getData(request) {
+    this.exec(request)
+  }
   
-    // check connection status
-  
+  exec(request) {  
     // if state.name is LoggedIn conn1 is free
     if (this.connection.state.name === 'LoggedIn') {
       this.connection.execSql(request);
