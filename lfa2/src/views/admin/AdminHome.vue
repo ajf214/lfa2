@@ -42,10 +42,15 @@
     <div v-else class="no-auth-container">
       You must be signed in with a valid @lawrencefarmsantiques.com email
       address to view the content on this page.
-      <button
+      <!--<button
         v-if="userToken == null"
         v-google-signin-button="clientId"
         class="google-signin-button"
+      >-->
+      <button
+        v-if="userToken == null"
+        class="google-signin-button"
+        id="gauth-button"
       >
         <img
           class="g-logo"
@@ -60,16 +65,16 @@
 
 <script>
 import axios from "axios";
-import GoogleSignInButton from "vue-google-signin-button-directive";
+// import GoogleSignInButton from "vue-google-signin-button-directive";
 import AdminStoreItem from "../../components/AdminStoreItem.vue";
 import LfaPager from "../../components/LfaPager.vue";
 
 export default {
   name: "AdminHome",
   components: { AdminStoreItem, LfaPager },
-  directives: {
-    GoogleSignInButton,
-  },
+  // directives: {
+  //   GoogleSignInButton,
+  // },
   data() {
     return {
       items: [],
@@ -78,6 +83,8 @@ export default {
       unsold: false,
       clientId: "1092000076053-gskfckaqihntrefibkmlce55n7dvul2b",
       version: null,
+      gapi: window.gapi,
+      auth2: null,
     };
   },
   computed: {
@@ -100,12 +107,33 @@ export default {
   },
   async beforeMount() {
     // get ALL items - todo - should I get ALL or just a subset?
-
     // only get items if I am already auth'd
     if (this.userToken !== null) {
       await this.getVersion();
       await this.loadData();
     }
+
+    await this.gapi.load("auth2", () => {
+      this.auth2 = this.gapi.auth2.init({
+        client_id: this.clientId,
+        cookiepolicy: "single_host_origin",
+      });
+
+      if (this.userToken === null) {
+        this.auth2.attachClickHandler(
+          "gauth-button",
+          {},
+          this.OnGoogleAuthSuccess,
+          this.OnGoogleAuthFail
+        );
+      }
+
+      // check if user is signed in
+      this.auth2.isSignedIn.listen(this.GoogleAuthSignInChanged);
+
+      // not sure if I need to listen to userChanged
+      //auth2.currentUser.listen(userChanged); // This is what you use to listen for user changes
+    });
   },
   methods: {
     async getVersion() {
@@ -120,17 +148,17 @@ export default {
       );
       this.items = response.data;
     },
-    async OnGoogleAuthSuccess(idToken) {
+    async OnGoogleAuthSuccess(googleUser) {
       // Receive the idToken and make your magic with the backend
       const response = await axios.post(`${this.API_ENDPOINT}/token-signin`, {
-        token: idToken,
+        token: googleUser.wc.id_token,
       });
 
       console.log(response.data);
 
       // committing user info will trigger loading the management panel
       this.$store.commit("setUser", {
-        token: idToken,
+        token: googleUser.wc.id_token,
         userPayload: response.data,
       });
 
@@ -141,6 +169,22 @@ export default {
     },
     OnGoogleAuthFail(error) {
       console.log(error);
+    },
+    async GoogleAuthSignInChanged(val) {
+      console.log("Signin state changed to ", val);
+
+      const googleUser = this.auth2.currentUser.get();
+      const response = await axios.post(`${this.API_ENDPOINT}/token-signin`, {
+        token: googleUser.wc.id_token,
+      });
+
+      this.$store.commit("setUser", {
+        token: googleUser.wc.id_token,
+        userPayload: response.data,
+      });
+
+      this.loadData();
+      this.getVersion();
     },
     updateSoldStatus(value) {
       console.log("UPDATING SOLD STATUS");

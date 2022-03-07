@@ -50,9 +50,9 @@ export default {
   padding: 20px;
 }
 
-.modal-container span {
-    width: max-content;
-    padding: 20px 0;
+.modal-container p {
+    margin: 0 0;
+    margin-bottom: 20px;
 }
 
 .actions {
