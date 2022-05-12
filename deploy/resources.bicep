@@ -19,13 +19,12 @@ param dbPassword string
 param cloudinaryKey string
 
 
-// todo - not being used...
 resource acr 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
   scope: resourceGroup('bicep-modules')
   name: 'adotfrankpublic'
 }
 
-// TODO: Do I *need* a log analytics workspace?!?
+// LA workspace required...
 resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   name: logAnalyticsWorkspaceName
   location: location
