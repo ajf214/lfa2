@@ -18,7 +18,7 @@ param dbPassword string
 @description('API key for image storage CDN (Cloudinary')
 param cloudinaryKey string
 
-
+// todo -- use prereqs to create bicep registry and enable admin access
 resource acr 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
   scope: resourceGroup('bicep-modules')
   name: 'adotfrankpublic'
