@@ -15,6 +15,7 @@ param deploymentType string = 'dev'
 param dbPassword string
 
 @secure()
+@description('API key for image storage CDN (Cloudinary')
 param cloudinaryKey string
 
 
