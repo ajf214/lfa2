@@ -12,8 +12,6 @@ param minReplicas int = 0
 @secure()
 param containerRegistryPassword string
 
-var registrySecretRefName = 'docker-password'
-
 // TODO -- remove once the other is working
 // resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
 //   name: containerAppName
@@ -62,7 +60,6 @@ resource containerApp2 'Microsoft.App/containerApps@2022-03-01' = {
   properties: {
     managedEnvironmentId: environmentId
     configuration: {
-      activeRevisionsMode: 'multiple'
       ingress: {
         external: isExternalIngress
         targetPort: containerPort
@@ -72,12 +69,12 @@ resource containerApp2 'Microsoft.App/containerApps@2022-03-01' = {
         {
           server: containerRegistry
           username: containerRegistryUsername
-          passwordSecretRef: registrySecretRefName
+          passwordSecretRef: 'acr-password'
         }
       ]
       secrets: [
         {
-          name: registrySecretRefName
+          name: 'acr-password'
           value: containerRegistryPassword
         }
       ]

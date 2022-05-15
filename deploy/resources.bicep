@@ -79,8 +79,8 @@ module frontend 'http-container.bicep' = {
     containerImage: '${acr.properties.loginServer}/lfa/lfa-front:${gitHash}' // needs to be full URI
     containerPort: 80
     containerRegistry: acr.properties.loginServer // full url, not just the resource name
-    containerRegistryPassword: acr.listCredentials().username
-    containerRegistryUsername: acr.listCredentials().passwords[0].value
+    containerRegistryUsername: acr.listCredentials().username
+    containerRegistryPassword: acr.listCredentials().passwords[0].value
     environmentId: environment.id
     isExternalIngress: true
     env: [
@@ -102,8 +102,8 @@ module backend 'http-container.bicep' = {
     containerImage: '${acr.properties.loginServer}/lfa/lfa-back:${gitHash}'
     containerPort: 3000
     containerRegistry: acr.properties.loginServer // TODO: must be full URL, add @description
-    containerRegistryPassword: acr.listCredentials().username
-    containerRegistryUsername: acr.listCredentials().passwords[0].value
+    containerRegistryUsername: acr.listCredentials().username
+    containerRegistryPassword: acr.listCredentials().passwords[0].value
     environmentId: environment.id
     isExternalIngress: true
     minReplicas: 1
