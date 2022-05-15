@@ -4,7 +4,10 @@ param environmentId string
 param containerImage string
 param containerPort int
 param isExternalIngress bool
+
+@description('Note: must be full container registry url, not short url')
 param containerRegistry string
+
 param containerRegistryUsername string
 param env array = []
 param minReplicas int = 0
@@ -12,49 +15,7 @@ param minReplicas int = 0
 @secure()
 param containerRegistryPassword string
 
-// TODO -- remove once the other is working
-// resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
-//   name: containerAppName
-//   kind: 'containerapp'
-//   location: location
-//   properties: {
-//     kubeEnvironmentId: environmentId
-//     configuration: {
-//       secrets: [
-//         {
-//           name: registrySecretRefName
-//           value: containerRegistryPassword
-//         }
-//       ]
-//       registries: [
-//         {
-//           server: containerRegistry
-//           username: containerRegistryUsername
-//           passwordSecretRef: registrySecretRefName
-//         }
-//       ]
-//       ingress: {
-//         external: isExternalIngress
-//         targetPort: containerPort
-//         transport: 'auto'
-//       }
-//     }
-//     template: {
-//       containers: [
-//         {
-//           image: containerImage
-//           name: containerAppName
-//           env: env
-//         }
-//       ]
-//       scale: {
-//         minReplicas: minReplicas
-//       }
-//     }
-//   }
-// }
-
-resource containerApp2 'Microsoft.App/containerApps@2022-03-01' = {
+resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
   location: location
   properties: {
@@ -85,10 +46,7 @@ resource containerApp2 'Microsoft.App/containerApps@2022-03-01' = {
           name: containerAppName
           image: containerImage
           env: env
-          // resources: {
-          //   cpu: '0.5'
-          //   memory: '1Gi'
-          // }
+          // todo -- might want to tweak 'resources' property
         }
       ]
       scale: {
@@ -99,4 +57,4 @@ resource containerApp2 'Microsoft.App/containerApps@2022-03-01' = {
   }
 }
 
-output fqdn string = containerApp2.properties.configuration.ingress.fqdn
+output fqdn string = containerApp.properties.configuration.ingress.fqdn

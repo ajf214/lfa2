@@ -39,25 +39,6 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
   })
 }
 
-// this will be the target of the individual container apps
-// shared networking
-// resource environment 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
-//   name: '${baseName}-environment-deploy-02'
-//   location: location
-//   properties: {
-//     #disable-next-line BCP037
-//     type: 'managed' // create an AKS cluster? -- todo: confirm this
-//     internalLoadBalancerEnabled: false
-//     appLogsConfiguration: {
-//       destination: 'log-analytics'
-//       logAnalyticsConfiguration: {
-//         customerId: logAnalyticsWorkspace.properties.customerId
-//         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
-//       }
-//     }
-//   }
-// }
-
 resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
   name: '${baseName}-environment-deploy-03'
   location: location
@@ -101,7 +82,7 @@ module backend 'http-container.bicep' = {
     containerAppName: '${baseName}-backend'
     containerImage: '${acr.properties.loginServer}/lfa/lfa-back:${gitHash}'
     containerPort: 3000
-    containerRegistry: acr.properties.loginServer // TODO: must be full URL, add @description
+    containerRegistry: acr.properties.loginServer
     containerRegistryUsername: acr.listCredentials().username
     containerRegistryPassword: acr.listCredentials().passwords[0].value
     environmentId: environment.id
