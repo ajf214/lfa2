@@ -23,19 +23,20 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   properties: {
     managedEnvironmentId: environmentId
     configuration: {
-      ingress: {
+      ingress: union({
         external: isExternalIngress
         targetPort: containerPort
         allowInsecure: true
+      }, customDomain ? {
         customDomains: [
-          customDomain ? {
+          {
             // todo - replace certId w/ real reference
             certificateId: '/subscriptions/d56e652e-758d-480a-8f0d-47f230264b4c/resourceGroups/lfa-container-apps/providers/Microsoft.App/managedEnvironments/lfa-environment-deploy-03/certificates/paoiwefjpaowehopahweoigjawoegjaowe'
             bindingType: 'SniEnabled'
             name: 'lawrencefarmsantiques.com'
-          } : {}
+          }
         ]
-      }
+      } : {})
       registries: [
         {
           server: containerRegistry
