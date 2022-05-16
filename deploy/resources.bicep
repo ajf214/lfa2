@@ -50,7 +50,13 @@ resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
         sharedKey: logAnalyticsWorkspace.listKeys().primarySharedKey
       }
     }
-  } 
+  }
+}
+
+// required for custome domain?
+resource frontendCert 'Microsoft.App/managedEnvironments/certificates@2022-03-01' existing = {
+  parent: environment
+  name: 'paoiwefjpaowehopahweoigjawoegjaowe'
 }
 
 module frontend 'http-container.bicep' = {
@@ -72,7 +78,9 @@ module frontend 'http-container.bicep' = {
     ]
     location: location
     minReplicas: 1
-    customDomain: true
+    useCustomDomain: true
+    certId: frontendCert.id
+    customDomain: 'lawrencefarmsantiques.com'
   }
 }
 
@@ -123,4 +131,3 @@ module backend 'http-container.bicep' = {
 }
 
 output frontendUrl string = frontend.outputs.fqdn
-

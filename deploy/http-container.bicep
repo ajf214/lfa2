@@ -15,7 +15,9 @@ param minReplicas int = 0
 @secure()
 param containerRegistryPassword string
 
-param customDomain bool = false
+param useCustomDomain bool = false
+param certId string = ''
+param customDomain string = ''
 
 resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   name: containerAppName
@@ -23,17 +25,16 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
   properties: {
     managedEnvironmentId: environmentId
     configuration: {
-      ingress: union({
+      ingress: union({ // using union to set optional property "customDomains", see #387
         external: isExternalIngress
         targetPort: containerPort
         allowInsecure: true
-      }, customDomain ? {
+      }, useCustomDomain ? {
         customDomains: [
           {
-            // todo - replace certId w/ real reference
-            certificateId: '/subscriptions/d56e652e-758d-480a-8f0d-47f230264b4c/resourceGroups/lfa-container-apps/providers/Microsoft.App/managedEnvironments/lfa-environment-deploy-03/certificates/paoiwefjpaowehopahweoigjawoegjaowe'
-            bindingType: 'SniEnabled'
-            name: 'lawrencefarmsantiques.com'
+            certificateId: certId
+            bindingType: 'SniEnabled' // todo - no clue what this means...
+            name: customDomain
           }
         ]
       } : {})
