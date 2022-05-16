@@ -5,18 +5,18 @@ param logAnalyticsWorkspaceName string = 'lfa-logs'
 @description('Git commit hash which is also the tag of the image to use in ACR')
 param gitHash string
 
-@allowed([
-  'prod'
-  'dev'
-])
-param deploymentType string = 'dev'
+// @allowed([
+//   'prod'
+//   'dev'
+// ])
+// param deploymentType string = 'dev'
 
-@secure()
-param dbPassword string
+// @secure()
+// param dbPassword string
 
-@secure()
-@description('API key for image storage CDN (Cloudinary')
-param cloudinaryKey string
+// @secure()
+// @description('API key for image storage CDN (Cloudinary')
+// param cloudinaryKey string
 
 // todo -- use prereqs to create bicep registry and enable admin access
 resource acr 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
