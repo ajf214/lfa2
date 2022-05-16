@@ -47,6 +47,11 @@
         v-google-signin-button="clientId"
         class="google-signin-button"
       >-->
+      <!-- <div id="g_id_onload"
+         data-client_id="1092000076053-gskfckaqihntrefibkmlce55n7dvul2b.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+      </div>
+      <div class="g_id_signin" data-type="standard"></div> -->
       <button
         v-if="userToken == null"
         class="google-signin-button"
@@ -117,6 +122,7 @@ export default {
       this.auth2 = this.gapi.auth2.init({
         client_id: this.clientId,
         cookiepolicy: "single_host_origin",
+        plugin_name: 'foobar'
       });
 
       if (this.userToken === null) {
@@ -130,6 +136,10 @@ export default {
 
       // check if user is signed in
       this.auth2.isSignedIn.listen(this.GoogleAuthSignInChanged);
+
+      // const GoogleAuth = this.gapi.auth2.getAuthInstance()
+      // const GoogleUser = GoogleAuth.currentUser.get()
+      // console.log(GoogleUser)
 
       // not sure if I need to listen to userChanged
       //auth2.currentUser.listen(userChanged); // This is what you use to listen for user changes
@@ -148,17 +158,20 @@ export default {
       );
       this.items = response.data;
     },
+    handleCredentialResponse() {},
     async OnGoogleAuthSuccess(googleUser) {
+      console.log(googleUser)
+      
       // Receive the idToken and make your magic with the backend
       const response = await axios.post(`${this.API_ENDPOINT}/token-signin`, {
-        token: googleUser.wc.id_token,
+        token: googleUser.getAuthResponse().id_token //googleUser.wc.id_token,
       });
 
       console.log(response.data);
 
       // committing user info will trigger loading the management panel
       this.$store.commit("setUser", {
-        token: googleUser.wc.id_token,
+        token: googleUser.getAuthResponse().id_token, //googleUser.wc.id_token,
         userPayload: response.data,
       });
 
@@ -175,11 +188,11 @@ export default {
 
       const googleUser = this.auth2.currentUser.get();
       const response = await axios.post(`${this.API_ENDPOINT}/token-signin`, {
-        token: googleUser.wc.id_token,
+        token: googleUser.getAuthResponse().id_token //googleUser.wc.id_token,
       });
 
       this.$store.commit("setUser", {
-        token: googleUser.wc.id_token,
+        token: googleUser.getAuthResponse().id_token, // googleUser.wc.id_token,
         userPayload: response.data,
       });
 
