@@ -65,10 +65,10 @@ module frontend 'http-container.bicep' = {
     environmentId: environment.id
     isExternalIngress: true
     env: [
-      {
-        name: 'VUE_APP_BASE_URL'
-        value: 'https://${backend.outputs.fqdn}'
-      }
+      // {
+      //   name: 'VUE_APP_BASE_URL'
+      //   value: 'https://${backend.outputs.fqdn}'
+      // }
     ]
     location: location
     minReplicas: 1
