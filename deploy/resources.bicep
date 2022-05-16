@@ -72,6 +72,7 @@ module frontend 'http-container.bicep' = {
     ]
     location: location
     minReplicas: 1
+    customDomain: true
   }
 }
 
