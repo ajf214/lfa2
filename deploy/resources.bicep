@@ -53,7 +53,7 @@ resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
   }
 }
 
-// required for custome domain?
+// required for custome domain
 resource frontendCert 'Microsoft.App/managedEnvironments/certificates@2022-03-01' existing = {
   parent: environment
   name: 'paoiwefjpaowehopahweoigjawoegjaowe'
