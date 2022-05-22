@@ -54,10 +54,10 @@ resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
 }
 
 // required for custome domain
-resource frontendCert 'Microsoft.App/managedEnvironments/certificates@2022-03-01' existing = {
-  parent: environment
-  name: 'paoiwefjpaowehopahweoigjawoegjaowe'
-}
+// resource frontendCert 'Microsoft.App/managedEnvironments/certificates@2022-03-01' existing = {
+//   parent: environment
+//   name: 'paoiwefjpaowehopahweoigjawoegjaowe'
+// }
 
 module frontend 'http-container.bicep' = {
   name: '${baseName}-frontend-deploy'
@@ -78,9 +78,9 @@ module frontend 'http-container.bicep' = {
     ]
     location: location
     minReplicas: 1
-    useCustomDomain: true
-    certId: frontendCert.id
-    customDomain: 'lawrencefarmsantiques.com'
+    // useCustomDomain: true
+    // certId: frontendCert.id
+    // customDomain: 'lawrencefarmsantiques.com'
   }
 }
 
