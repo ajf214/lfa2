@@ -62,7 +62,7 @@ resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
 module frontend 'http-container.bicep' = {
   name: '${baseName}-frontend-deploy'
   params: {
-    containerAppName: '${baseName}-frontend'
+    containerAppName: '${baseName}-frontend-02'
     containerImage: '${acr.properties.loginServer}/lfa/lfa-front:${gitHash}' // needs to be full URI
     containerPort: 80
     containerRegistry: acr.properties.loginServer // full url, not just the resource name
@@ -88,7 +88,7 @@ module backend 'http-container.bicep' = {
   name: '${baseName}-backend-deploy'
   params: {
     location: location
-    containerAppName: '${baseName}-backend'
+    containerAppName: '${baseName}-backend-02'
     containerImage: '${acr.properties.loginServer}/lfa/lfa-back:${gitHash}'
     containerPort: 3000
     containerRegistry: acr.properties.loginServer
