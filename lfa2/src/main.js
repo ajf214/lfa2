@@ -13,9 +13,9 @@ datadogRum.init({
     clientToken: 'pubc326e4428d43fe290364451852a3b4a6',
     site: 'datadoghq.com',
     service:'lfa2',
-    env:'dev',
+    env: getEnv('VUE_APP_DATADOG_MODE'),
     // Specify a version number to identify the deployed version of your application in Datadog 
-    // version: '1.0.0',
+    // version: '1.0.0', // todo -- pass version here
     sampleRate: 100,
     premiumSampleRate: 100,
     trackInteractions: true,
