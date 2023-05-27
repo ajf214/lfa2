@@ -1,10 +1,10 @@
 # Lawrence Farms Antiques 2
 
 ## To run locally without building
+1. Update `package.json` in `lfa2-backend` to add `DB_PASSWORD` and `CLOUDINARY_API_KEY` environment variables
+1. Ensure your IP address is in the allow list for the SQL server.
 1. Start frontend with `npm run serve`
 1. Start backend with `npm run dev`
-
-NOTE: Ensure your IP address is in the allow list for the SQL server.
 
 ## To build and run locally
 
@@ -20,6 +20,17 @@ NOTE: Remember to be sign in with your *@lawrencefarmsantiques.com account! This
 TODO
 
 ## Deploy to Azure
+
+Ensure the GitHub repo has been updated with an `AZURE_CREDENTIALS` secret of the following format:
+
+```json
+{
+    "clientId": "",
+    "clientSecret": "",
+    "subscriptionId": "",
+    "tenantId": ""
+}
+```
 
 Login to ACR:
 ```powershell

@@ -5,7 +5,7 @@
     <!-- don't show nav if manage is in the path -->
     <router-view />
     <footer>
-      <router-link class="navlink" to="/admin">Adminstrator</router-link>
+      <router-link class="navlink" to="/admin">Administrator</router-link>
     </footer>
   </div>
 </template>
