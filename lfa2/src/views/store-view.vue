@@ -43,6 +43,7 @@
       class="pager"
       :current-page="this.page"
       :unsold="this.unsold"
+      items-per-page="36"
       @change-page="changePage"
     ></lfa-pager>
 

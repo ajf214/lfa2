@@ -57,6 +57,9 @@ router.get('/items', (req, res, next) => {
   let sort = req.query.sort
   let unsold = req.query.unsold
 
+  // dynamically set itemsPerPage
+  let itemsPerPage = req.query.itemsPerPage == undefined ? 36 : req.query.itemsPerPage
+
   if (page === undefined) {
     page = "1"
   }
@@ -69,11 +72,13 @@ router.get('/items', (req, res, next) => {
     unsold = "false"
   }
 
+  // const itemsPerPage = 36
+
   const dbSort = sort === "recent" ? "Image" : "ItemName"
   const query = `
     DECLARE @PageNumber AS INT, @RowspPage AS INT 
     SET @PageNumber = @p_page
-    SET @RowspPage = 18 
+    SET @RowspPage = ${itemsPerPage} 
     SELECT ItemName, Url, CAST(Image AS INT) AS Image, Sold 
     FROM dbo.StoreItems 
     ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""} 

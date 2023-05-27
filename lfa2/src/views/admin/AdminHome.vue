@@ -35,6 +35,7 @@
         class="lfa-pager"
         @change-page="changePage"
         :currentPage="page"
+        items-per-page="60"
       >
       </lfa-pager>
     </div>

@@ -16,7 +16,7 @@ import axios from "axios";
 
 export default {
   name: "LfaPager",
-  props: ["currentPage", "unsold"],
+  props: ["currentPage", "unsold", "itemsPerPage"],
   data() {
     return {
       pages: 0,
@@ -39,7 +39,8 @@ export default {
       this.itemCount = response.data.ItemCount;
     },
     calcPages: function (count) {
-      this.pages = Math.floor(count / 18) + 1;
+      // const itemsPerPage = 36
+      this.pages = Math.floor(count / this.itemsPerPage) + 1;
     },
     changePage: function (pageNumber) {
       window.scrollTo(0,0)
