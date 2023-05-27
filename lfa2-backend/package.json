@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "cross-env GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b DB_USERNAME=sonofdiesel DB=LFA-DEV IMAGE_FOLDER=lfa-items-test node ./bin/www"
+    "dev": "cross-env GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b DB_USERNAME=sonofdiesel DB_PASSWORD= CLOUDINARY_API_SECRET= DB=LFA-DEV IMAGE_FOLDER=lfa-items-test node ./bin/www"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.10",

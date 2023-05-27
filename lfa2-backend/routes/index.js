@@ -129,12 +129,13 @@ router.get('/all-items', (req, res, next) => {
 
 router.get('/get-hero-image', async (req, res, next) => {
   let url = req.query.url
+  // let itemName = req.query.itemName
 
   if (url === undefined) {
     res.send({ error: "NO_URL_PROVIDED" })
   } else {
-    let imageUrl = await firstDibsScraper.getProductHeroImage(url)
-    res.send({ cdnUrl: imageUrl })
+    let itemDetails = await firstDibsScraper.getProductHeroImage(url)
+    res.send(itemDetails)
   }
 })
 
@@ -210,10 +211,10 @@ router.post('/item', async (req, res, next) => {
       request.addParameter('p_name', TYPES.NVarChar, req.body.name)
       request.addParameter('p_firstDibsUrl', TYPES.NVarChar, req.body.firstDibsUrl)
       request.addParameter('p_imageName', TYPES.NVarChar, req.body.imageName)
-      request.addParameter('p_sold', TYPES.NVarChar, req.body.sold)
+      request.addParameter('p_sold', TYPES.NVarChar, req.body.sold ? 'isSold' : null)
 
       // if successful, create item in db
-      // todo - how do I guard against SQL injection?ß
+      // todo - this should be renamed to execute query
       db.getData(request)
     })
   } catch (error) { console.log(error) }

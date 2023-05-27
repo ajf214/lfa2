@@ -1,18 +1,24 @@
 <template>
   <div class="add-item-container">
-      <label>Item name: </label>
-      <input type="text" v-model="name" />
+      <!-- <label>Item name: </label>
+      <input type="text" v-model="name" placeholder="My Item Name" /> -->
 
       <label>1st Dibs URL: </label>
-      <input @change="scrapeFirstDibs" type="text" v-model="firstDibsUrl" />
+      <input @input="scrapeFirstDibs" type="text" v-model="firstDibsUrl" placeholder="1stdibs.com/..."/>
       
-      <div>
+      <!-- <div>
         <input type="checkbox" v-model="sold" />
         <label> Sold</label>
       </div>
+    -->
 
       <h3>Item preview</h3>
-      <store-item class="item" v-if="cdnUrl !== ''" :item="item"></store-item>
+      <store-item class="item" v-if="cdnUrl !== ''" :item="{
+        Image: cdnUrl,
+        Sold: sold ? 'isSold' : false,
+        Url: firstDibsUrl,
+        ItemName: name
+      }"></store-item>
       <div v-else class="item-placeholder">
         <span>Fill in fields to generate item preview</span>
       </div>
@@ -54,7 +60,12 @@ export default {
   methods: {
       async scrapeFirstDibs() {
           const response = await axios.get(`${this.API_ENDPOINT}/get-hero-image?url=${this.firstDibsUrl}`)
+          
+          console.log(response)
+          
           this.cdnUrl = response.data.cdnUrl
+          this.name = response.data.itemName
+          this.sold = response.data.sold
       },
       async submitItem () {
           console.log('called submitItem')
@@ -106,6 +117,10 @@ export default {
 
 img {
   width: 300px;
+}
+
+input::placeholder {
+  color: rgba(0,0,0, 0.4)
 }
 
 .add-item-container {
