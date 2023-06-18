@@ -7,7 +7,9 @@ async function getProductHeroImage(url) {
     const $ = cheerio.load(response.data)
     
     const itemName = $('div[data-tn="pdp-main-title"]').contents()[0].data
-    const imageElements = $('img[data-tn="pdp-hero-carousel-image"]')
+    
+    // NOTE: the suffix "For Sale" is added to items that are not sold and listed for sale
+    const imageElements = $(`img[alt="${itemName} For Sale"]`)
     
     if (imageElements[0] !== undefined) {
         console.log(`CDN SOURCE: ${imageElements[0].attribs.src}`)
@@ -28,6 +30,7 @@ async function getProductHeroImage(url) {
                 sold: true
             }
         } else {
+            console.log(`No match for item name: ${itemName}`)
             return {
                 cdnUrl: 'NoMatch',
                 itemName: 'NoMatch',
