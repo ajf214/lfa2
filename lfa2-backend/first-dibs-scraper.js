@@ -29,12 +29,6 @@ async function getProductHeroImage(url) {
                 itemName: itemName,
                 sold: true
             }
-        } else if (imagesFromCarousel[0] !== undefined) {
-            return {
-                cdnUrl: imagesFromCarousel[0].attribs.src,
-                itemName: itemName,
-                sold: true
-            }
         } else {
             console.log(`No match for item name: ${itemName}`)
             return {
