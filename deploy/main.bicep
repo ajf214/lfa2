@@ -13,6 +13,9 @@ param gitHash string
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: 'lfa-container-apps'
   location: location
+  tags: {
+    owner: 'alex'
+  }
 }
 
 resource kv 'Microsoft.KeyVault/vaults@2021-06-01-preview' existing = {
