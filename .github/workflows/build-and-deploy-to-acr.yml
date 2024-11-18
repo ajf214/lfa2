@@ -41,13 +41,32 @@ jobs:
         docker push adotfrankpublic.azurecr.io/lfa/lfa-back:$GITHUB_SHA_SHORT
       
     # deploy container app with updated images
-    - name: 'Deploy container app with bicep with updated images'
-      uses: azure/arm-deploy@v1
-      with:
-        subscriptionId: d56e652e-758d-480a-8f0d-47f230264b4c
-        resourceGroupName: lfa-container-apps
-        template: ./deploy/main.bicep
-        parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
+    # - name: 'Deploy container app with bicep with updated images'
+    #   uses: azure/arm-deploy@v1
+    #   with:
+    #     subscriptionId: d56e652e-758d-480a-8f0d-47f230264b4c
+    #     resourceGroupName: lfa-container-apps
+    #     template: ./deploy/main.bicep
+    #     parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
+    #     scope: subscription
+    #     region: eastus
+    #     failOnStdErr: false
+    - name: 'Deploy (using bicep-deploy)'
+      uses: azure/bicep-deploy/@v1
+      with: 
+        type: deploymentStack
+        operation: create
+        name: LFA2-Stack
+        location: eastus
         scope: subscription
-        region: eastus
-        failOnStdErr: false
+        subscriptionId: d56e652e-758d-480a-8f0d-47f230264b4c
+        template-file: ./deploy/main.bicep
+        # parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
+        parameters-file: ./deploy/main.bicepparam
+        action-on-unmanage-resources: detach
+        action-on-unmanage-resourcegroups: detach
+        # action-on-unmanage-managementgroup: detach
+        deny-settings-mode: denyWriteAndDelete
+        description: 'Manages all resources for LFA2'
+
+            
