@@ -34,6 +34,8 @@ jobs:
         CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         GIT_HASH: ${{ env.GITHUB_SHA_SHORT }}
       run: | 
+        sudo apt-get update
+        sudo apt-get install docker-compose-plugin
         docker-compose build
         docker tag lfa-front:$GITHUB_SHA_SHORT adotfrankpublic.azurecr.io/lfa/lfa-front:$GITHUB_SHA_SHORT
         docker tag lfa-back:$GITHUB_SHA_SHORT adotfrankpublic.azurecr.io/lfa/lfa-back:$GITHUB_SHA_SHORT
