@@ -78,14 +78,14 @@ jobs:
         name: LFA2-Stack
         location: eastus
         scope: subscription
-        subscriptionId: d56e652e-758d-480a-8f0d-47f230264b4c
+        subscription-id: d56e652e-758d-480a-8f0d-47f230264b4c
         template-file: ./deploy/main.bicep
-        # parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
         parameters-file: ./deploy/main.bicepparam
         action-on-unmanage-resources: detach
         action-on-unmanage-resourcegroups: detach
-        # action-on-unmanage-managementgroup: detach
         deny-settings-mode: denyWriteAndDelete
         description: 'Manages all resources for LFA2'
+        # action-on-unmanage-managementgroup: detach
+        # parameters: gitHash=${{ env.GITHUB_SHA_SHORT }} deploymentType=prod
 
             
