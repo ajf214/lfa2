@@ -34,9 +34,14 @@ async function verify(token) {
   }
 }
 
-// enable cors for all routes
-router.use(cors())
-router.options('*', cors())
+// enable cors for allowed origins
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : 'http://localhost:8080',
+}
+router.use(cors(corsOptions))
+router.options('*', cors(corsOptions))
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -78,7 +83,7 @@ router.get('/items', (req, res, next) => {
   const query = `
     DECLARE @PageNumber AS INT, @RowspPage AS INT 
     SET @PageNumber = @p_page
-    SET @RowspPage = ${itemsPerPage} 
+    SET @RowspPage = @p_itemsPerPage
     SELECT ItemName, Url, CAST(Image AS INT) AS Image, Sold 
     FROM dbo.StoreItems 
     ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""} 
@@ -90,6 +95,7 @@ router.get('/items', (req, res, next) => {
     res.send(results)
   })
   request.addParameter('p_page', TYPES.Int, page)
+  request.addParameter('p_itemsPerPage', TYPES.Int, itemsPerPage)
   db.getData(request, results => {
     res.send(results)
   })

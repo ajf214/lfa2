@@ -126,6 +126,10 @@ module backend 'http-container.bicep' = {
         name: 'GIT_HASH'
         value: gitHash
       }
+      {
+        name: 'ALLOWED_ORIGINS'
+        value: 'https://lawrencefarmsantiques.com'
+      }
     ]
   }
 }
