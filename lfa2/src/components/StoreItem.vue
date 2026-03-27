@@ -15,12 +15,14 @@
 </template>
 
 <script>
+import getEnv from '@/utils/env'
+
 export default {
   name: "StoreItem",
   props: ["item"],
   data() {
     return {
-      rootImagePath: `https://res.cloudinary.com/dqbr44qlr/${process.env.VUE_APP_CLOUDINARY_DIR}`,
+      rootImagePath: `https://res.cloudinary.com/dqbr44qlr/${getEnv('VUE_APP_CLOUDINARY_DIR')}`,
     };
   },
 };

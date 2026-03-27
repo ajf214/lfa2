@@ -31,6 +31,7 @@
 /* eslint-disable */
 import axios from "axios";
 import LfaModal from "./LfaModal.vue"
+import getEnv from '@/utils/env'
 
 export default {
   name: "AdminStoreItem",
@@ -38,7 +39,7 @@ export default {
   props: ["item"],
   data() {
     return {
-      rootImagePath: `https://res.cloudinary.com/dqbr44qlr/${process.env.VUE_APP_CLOUDINARY_DIR}`,
+      rootImagePath: `https://res.cloudinary.com/dqbr44qlr/${getEnv('VUE_APP_CLOUDINARY_DIR')}`,
       // modalData: {
       //   infoMessage: `Are you sure you want to delete "${this.item.ItemName}"?`,
       //   confirmationText: 'Delete item',
