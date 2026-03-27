@@ -39,7 +39,7 @@ resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03
   })
 }
 
-resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
+resource environment 'Microsoft.App/managedEnvironments@2025-07-01' = {
   name: '${baseName}-environment'
   location: location
   properties: {
@@ -51,12 +51,6 @@ resource environment 'Microsoft.App/managedEnvironments@2022-03-01' = {
       }
     }
   }
-}
-
-// required for custome domain
-resource frontendCert 'Microsoft.App/managedEnvironments/certificates@2022-03-01' existing = {
-  parent: environment
-  name: 'lawrencefarmsantiques-basiccert'
 }
 
 module frontend 'http-container.bicep' = {
@@ -79,7 +73,6 @@ module frontend 'http-container.bicep' = {
     location: location
     minReplicas: 1
     useCustomDomain: true
-    certId: frontendCert.id
     customDomain: 'lawrencefarmsantiques.com'
   }
 }

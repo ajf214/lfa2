@@ -16,10 +16,9 @@ param minReplicas int = 0
 param containerRegistryPassword string
 
 param useCustomDomain bool = false
-param certId string = ''
 param customDomain string = ''
 
-resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
+resource containerApp 'Microsoft.App/containerApps@2025-07-01' = {
   name: containerAppName
   location: location
   properties: {
@@ -32,9 +31,8 @@ resource containerApp 'Microsoft.App/containerApps@2022-03-01' = {
       }, useCustomDomain ? {
         customDomains: [
           {
-            certificateId: certId
-            bindingType: 'SniEnabled' // todo - no clue what this means...
             name: customDomain
+            bindingType: 'Auto'
           }
         ]
       } : {})
