@@ -83,7 +83,7 @@ resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2025
   location: location
   properties: {
     subjectName: 'lawrencefarmsantiques.com'
-    domainControlValidation: 'CNAME'
+    domainControlValidation: 'HTTP'
   }
   dependsOn: [
     frontend
