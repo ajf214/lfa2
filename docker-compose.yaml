@@ -16,6 +16,7 @@ services:
       - 80:80
     environment:
       - VUE_APP_BASE_URL=http://localhost:3000
+      - VUE_APP_CLOUDINARY_DIR=lfa-items-test
   
   lfabackend:
     build:

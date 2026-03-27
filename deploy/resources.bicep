@@ -69,6 +69,10 @@ module frontend 'http-container.bicep' = {
         name: 'VUE_APP_BASE_URL'
         value: 'https://${backend.outputs.fqdn}'
       }
+      {
+        name: 'VUE_APP_CLOUDINARY_DIR'
+        value: deploymentType == 'prod' ? 'lfa-items' : 'lfa-items-test'
+      }
     ]
     location: location
     minReplicas: 1
