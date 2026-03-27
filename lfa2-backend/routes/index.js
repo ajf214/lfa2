@@ -201,12 +201,12 @@ router.post('/item', async (req, res, next) => {
               SET Url=@p_firstDibsUrl, 
                Image=@p_imageName, 
                Sold=@p_sold, 
-               DateAdded='2020-06-01'
+               DateAdded=GETDATE()
             WHERE ItemName = @p_name;
-      
-          ELSE 
-            INSERT dbo.StoreItems (ItemName, Url, Image, Sold, DateAdded) 
-          VALUES (@p_name, @p_firstDibsUrl, @p_imageName, @p_sold, '2020-06-01')
+
+          ELSE
+            INSERT dbo.StoreItems (ItemName, Url, Image, Sold, DateAdded)
+          VALUES (@p_name, @p_firstDibsUrl, @p_imageName, @p_sold, GETDATE())
       
         COMMIT
       `
