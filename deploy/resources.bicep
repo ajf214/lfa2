@@ -77,6 +77,19 @@ module frontend 'http-container.bicep' = {
   }
 }
 
+resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2025-07-01' = {
+  parent: environment
+  name: '${baseName}-environment-cert'
+  location: location
+  properties: {
+    subjectName: 'lawrencefarmsantiques.com'
+    domainControlValidation: 'CNAME'
+  }
+  dependsOn: [
+    frontend
+  ]
+}
+
 module backend 'http-container.bicep' = {
   name: '${baseName}-backend-deploy'
   params: {
