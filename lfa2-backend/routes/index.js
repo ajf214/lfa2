@@ -101,18 +101,28 @@ router.get('/items', (req, res, next) => {
   })
 })
 
-router.delete('/item/:image', (req, res, next) => {
-  const query = `
-  DELETE FROM dbo.StoreItems
-  WHERE Image=@p_image 
-  `
+router.delete('/item/:image', async (req, res, next) => {
+  try {
+    const authResult = await verify(req.query.token)
+    if (!authResult.verified) {
+      return res.status(403).send({ error: 'Unauthorized' })
+    }
 
-  const request = db.constructRequest(query, results => {
-    res.send(results)
-  })
-  request.addParameter('p_image', TYPES.NVarChar, req.params.image)
+    const query = `
+    DELETE FROM dbo.StoreItems
+    WHERE Image=@p_image
+    `
 
-  db.getData(request)
+    const request = db.constructRequest(query, results => {
+      res.send(results)
+    })
+    request.addParameter('p_image', TYPES.NVarChar, req.params.image)
+
+    db.getData(request)
+  } catch (error) {
+    console.log(error)
+    res.status(403).send({ error: 'Unauthorized' })
+  }
 })
 
 // returns COUNT of all items in db, used to calculate number of pages
@@ -171,9 +181,12 @@ router.post('/item', async (req, res, next) => {
 
   // decrypt token
   try {
-    await verify(req.body.token)
+    const authResult = await verify(req.body.token)
+    if (!authResult.verified) {
+      return res.status(403).send({ error: 'Unauthorized' })
+    }
 
-    // upload image to cloudinary    
+    // upload image to cloudinary
     imageUploader.upload(req.body.cdnUrl, `${process.env.IMAGE_FOLDER}/${req.body.imageName}`, (result) => {
       // callback after upload finishes (todo - successfully? no!)
 
@@ -230,7 +243,10 @@ router.post('/item/set-status', async (req, res, next) => {
 
   // decrypt token
   try {
-    await verify(req.body.token)
+    const authResult = await verify(req.body.token)
+    if (!authResult.verified) {
+      return res.status(403).send({ error: 'Unauthorized' })
+    }
 
     const query = `
           SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;

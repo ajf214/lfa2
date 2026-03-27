@@ -89,7 +89,7 @@ export default {
       // todo - should get a confirmatio that they want to delete
       try {
         const result = await axios.delete(
-          `${this.API_ENDPOINT}/item/${this.item.Image}`
+          `${this.API_ENDPOINT}/item/${this.item.Image}?token=${this.$store.getters.getUserToken}`
         );
         this.$emit("update-items");
         this.showModal = false
