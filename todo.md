@@ -2,10 +2,10 @@
 * Nicer loading screens for the following views:
   - when a new page of items is loaded (in the user facing part of the site AND in the admin views)
   - when a new StoreItem is getting created
-* Change SQLDB auth - Ideally to use Azure RBAC and/or Managed Identity
+* Change SQLDB auth - Ideally to use Azure RBAC and/or Managed Identity**
 * Images are all too expensive to load - improve image load performance by taking advantage of Cloudinary's APIs for loading thumbnails, etc.
-* Build some basic tests that validate the following:
-  - Ensure tests only run on the Dev version of the app
-  - Store can load all items
-  - Logging into the admin portal works (How will I authenticate?)
-  - Items can be created, deleted, marked as sold
+* Build some basic tests**
+* Make the Bicep code safer
+
+
+**Plan for this item lives in `/plans` directory
