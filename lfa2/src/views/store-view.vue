@@ -48,37 +48,14 @@
     ></lfa-pager>
 
     <div class="first-dibs-wrapper">
-      <div class="firstDibsDealerBadgeContainer">
-        <div class="firstdibs-badge-shop-dealer">
-          <a
-            href="https://www.1stdibs.com/dealers/lawrence-farms-antiques/"
-            target="_blank"
-            class="firstdibs-badge-shop-dealer-text"
-            name="dealer_badge_shop_dealer"
-          >
-            <div>SHOP</div>
-            <div>Lawrence Farms Antiques</div>
-            <div>
-              <span class="dealer-badge-divider-line"></span>
-              <span class="firstdibs-badge-shop-dealer-subtext">ON</span>
-              <span class="dealer-badge-divider-line"></span>
-            </div>
-          </a>
-          <div class="firstdibs-badge-shop-dealer-link-container">
-            <a
-              href="https://www.1stdibs.com/"
-              target="_blank"
-              name="dealer_badge_shop_dealer"
-            >
-              <img
-                src="https://shard1.1stdibs.us.com/static/images/dealers/dealer-badges/shop-1stdibs-dealer.png"
-                alt="Shop Lawrence Farms Antiques's antique furniture on 1stdibs"
-                border="0"
-              />
-            </a>
-          </div>
-        </div>
-      </div>
+      <a href="https://www.1stdibs.com/dealers/lawrence-farms-antiques/" target="_blank">
+        <img
+          src="https://a.1stdibscdn.com/badges/1stdibs-black_and_gold@2x.png"
+          alt="Lawrence Farms Antiques"
+          width="50"
+          height="50"
+        />
+      </a>
     </div>
   </div>
 </template>
@@ -113,19 +90,7 @@ export default {
 
     this.loadData();
   },
-  mounted() {
-    // 1st dibs stuff
-    if (!window.document.getElementById("firstDibsDealerBadgeScript")) {
-      var script = window.document.createElement("script");
-      var cacheBust = new Date().getTime();
-      script.type = "text/javascript";
-      script.src =
-        "https://shard1.1stdibs.us.com/static/dealer/brand-assets/badges/c/dealer-badge.js?" +
-        cacheBust;
-      script.id = "firstDibsDealerBadgeScript";
-      window.document.getElementsByTagName("HEAD")[0].appendChild(script);
-    }
-  },
+  mounted() {},
   methods: {
     loadData: async function () {
       const response = await axios.get(
@@ -163,10 +128,9 @@ export default {
       });
     },
   },
-  beforeRouteUpdate(to, from, next) {
+  beforeRouteUpdate() {
     window.scrollTo(0,0)
     this.loadData();
-    next();
   },
 };
 </script>
@@ -232,6 +196,7 @@ export default {
   grid-column: 1/-1;
   margin: auto;
   margin-top: 40px;
+  margin-bottom: -80px;
 }
 
 #unsold-only {
@@ -293,5 +258,4 @@ export default {
   }
 }
 
-@import "../external-css/firstdibs.css";
 </style>
