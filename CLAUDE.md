@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Lawrence Farms Antiques 2 (LFA2) is a full-stack e-commerce app for an antique shop. It's a monorepo with a Vue 2 frontend, Node.js/Express backend, and Azure Bicep infrastructure-as-code.
+Lawrence Farms Antiques 2 (LFA2) is a full-stack e-commerce app for an antique shop. It's a monorepo with a Vue 3 frontend, Node.js/Express backend, and Azure Bicep infrastructure-as-code.
 
 ## Commands
 
@@ -23,6 +23,7 @@ npm run dev          # Dev server (loads .env automatically)
 ```
 
 ### Local Development
+All local builds and runs should be done via Docker Compose — do not run `npm install`, `npm run build`, or `npm run serve` directly on the host.
 ```bash
 docker-compose build  # Build both containers
 docker-compose up     # Run frontend (port 80) + backend (port 3000)
@@ -30,8 +31,8 @@ docker-compose up     # Run frontend (port 80) + backend (port 3000)
 
 ## Architecture
 
-### Frontend (Vue 2 SPA)
-- `lfa2/src/main.js` — App entry point; initializes Vue + Datadog RUM
+### Frontend (Vue 3 SPA)
+- `lfa2/src/main.js` — App entry point
 - `lfa2/src/router.js` — Routes: `/` home, `/store` inventory, `/about`, `/contact`, `/admin` (Google OAuth required), `/admin/manage-item` CRUD
 - `lfa2/src/store.js` — Vuex store for auth token/payload
 - `lfa2/src/views/` — Page-level components
@@ -42,7 +43,7 @@ The frontend uses an `entrypoint.sh` script to inject runtime environment variab
 ### Backend (Express.js)
 - `lfa2-backend/app.js` — Express setup with CORS, cookie-parser, Morgan
 - `lfa2-backend/routes/index.js` — All API endpoints
-- `lfa2-backend/db-interface.js` — Azure SQL connection pool (tedious driver, dual connections)
+- `lfa2-backend/db-interface.js` — Azure SQL connection pool (mssql driver)
 - `lfa2-backend/first-dibs-scraper.js` — Scrapes 1stDibs.com product images via Cheerio
 - `lfa2-backend/image-uploader.js` — Cloudinary CDN upload integration
 

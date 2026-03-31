@@ -1,23 +1,21 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import getEnv from '@/utils/env'
 
-Vue.config.productionTip = false
+const app = createApp(App)
 
+app.use(router)
+app.use(store)
 
-Vue.mixin({
-  // distribute runtime config into every vue component
+// distribute runtime config into every vue component
+app.mixin({
   data() {
     return {
-      API_ENDPOINT: getEnv('VUE_APP_BASE_URL') // 'http://localhost:2999'// process.env.API_ENDPOINT
+      API_ENDPOINT: getEnv('VUE_APP_BASE_URL')
     }
   }
 })
 
-new Vue({
-  router,
-  render: h => h(App),
-  store
-}).$mount('#app')
+app.mount('#app')
