@@ -52,9 +52,13 @@ Add `"@azure/identity": "^4.0.0"` to dependencies. Required by `mssql` v11 for A
 
 `docker-compose.yaml` keeps `DB_USERNAME` and `DB_PASSWORD`. Without `USE_MANAGED_IDENTITY`, the code falls back to password auth automatically.
 
+**Important:** The `sonofdiesel` SQL login must remain active on the server for local dev to work. Server-level authentication must stay set to "Both" (SQL + Azure AD) in the Azure portal — do **not** switch to "Azure AD only", as that would block password auth on all databases including `LFA-DEV`.
+
 ## Step 6: One-time manual SQL setup (post-deploy, not in code)
 
-After deploying, an Azure AD admin must run this against both `LFA` and `LFA-DEV` databases:
+The SQL server must have an Azure AD admin configured in the portal first.
+
+**`LFA-DEV` (dev database):** Grant managed identity access alongside existing password auth. The `sonofdiesel` user stays so local dev can connect via username/password.
 
 ```sql
 CREATE USER [lfa-backend-02] FROM EXTERNAL PROVIDER;
@@ -62,7 +66,14 @@ ALTER ROLE db_datareader ADD MEMBER [lfa-backend-02];
 ALTER ROLE db_datawriter ADD MEMBER [lfa-backend-02];
 ```
 
-The SQL server must have an Azure AD admin configured in the portal first.
+**`LFA` (prod database):** Grant managed identity access and remove password-based user. Prod should only be accessible via managed identity.
+
+```sql
+CREATE USER [lfa-backend-02] FROM EXTERNAL PROVIDER;
+ALTER ROLE db_datareader ADD MEMBER [lfa-backend-02];
+ALTER ROLE db_datawriter ADD MEMBER [lfa-backend-02];
+DROP USER [sonofdiesel];
+```
 
 ## Deployment Sequence (to avoid downtime)
 
