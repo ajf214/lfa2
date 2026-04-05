@@ -378,40 +378,21 @@ Column names change from PascalCase (SQL Server convention) to snake_case (Postg
 
 > **Alternative:** To minimize frontend changes, the backend `SELECT` queries could use `AS` aliases to preserve PascalCase names (e.g., `SELECT id AS "Id", item_name AS "ItemName"`). This is a judgment call — it hides the real column names but reduces the blast radius on the frontend. **Recommend:** Just update the frontend. The codebase is small and this is a one-time change.
 
-### Step 9: Set up local development (docker-compose)
+### Step 9: Update docker-compose for PostgreSQL
 
-Add a PostgreSQL container to `docker-compose.yaml`:
+No local PostgreSQL container needed — local dev points directly at the Azure `lfa_dev` database. Just update `docker-compose.yaml` and env files to use the new Postgres env vars instead of the old SQL Server ones.
 
-```yaml
-services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_DB: lfa_dev
-      POSTGRES_USER: lfa_local
-      POSTGRES_PASSWORD: localdev
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql  # schema auto-runs on first start
+Update `docker-compose.yaml` backend env vars:
+- Remove `DB_USERNAME=sonofdiesel`, `DB_PASSWORD=${LFA_DB_PASSWORD}`
+- Add `DB_HOST`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` for Postgres
 
-volumes:
-  pgdata:
-```
+Update `docker-compose.dev.env`:
+- Remove `DB=LFA-DEV`
+- Add `DB_HOST=lfa-postgres.postgres.database.azure.com`, `DB_NAME=lfa_dev`
 
-Create `db/init.sql` with the schema from the "New Schema" section.
-
-Update backend service env vars in docker-compose:
-
-```yaml
-backend:
-  environment:
-    DB_HOST: postgres
-    DB_NAME: lfa_dev
-    DB_USERNAME: lfa_local
-    DB_PASSWORD: localdev
-```
+Update `docker-compose.prod.env`:
+- Remove `DB=LFA`
+- Add `DB_HOST=lfa-postgres.postgres.database.azure.com`, `DB_NAME=lfa`
 
 ### Step 10: Test locally and deploy
 

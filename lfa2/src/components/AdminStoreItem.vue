@@ -1,15 +1,15 @@
 <template>
   <div class="item-container">
-    <img class="item-image" :src="`${rootImagePath}/${item.Image}.jpg`" />
+    <img class="item-image" :src="`${rootImagePath}/${item.image}.jpg`" />
     <div class="item-info">
-      <h3 class="item-name">{{ item.ItemName }}</h3>
+      <h3 class="item-name">{{ item.item_name }}</h3>
     </div>
     <div class="actions">
       <!-- <button @click="startEdit">Edit</button> -->
       <div
         @click="toggleSoldStatus"
         class="sold-tag"
-        :class="{ isSold: item.Sold === 'isSold' }"
+        :class="{ isSold: item.sold === true }"
       >
         SOLD
       </div>
@@ -59,13 +59,13 @@ export default {
       });
     },
     async toggleSoldStatus() {
-      const toggledStatus = this.item.Sold === "isSold" ? "" : "isSold";
+      const toggledStatus = this.item.sold ? "" : "isSold";
 
       try {
         const result = await axios.post(
           `${this.API_ENDPOINT}/item/set-status`,
           {
-            name: this.item.ItemName,
+            id: this.item.id,
             newStatus: toggledStatus,
             token: this.$store.getters.getUserToken,
           }
@@ -90,7 +90,7 @@ export default {
       // todo - should get a confirmatio that they want to delete
       try {
         const result = await axios.delete(
-          `${this.API_ENDPOINT}/item/${this.item.Image}?token=${this.$store.getters.getUserToken}`
+          `${this.API_ENDPOINT}/item/${this.item.id}?token=${this.$store.getters.getUserToken}`
         );
         this.$emit("update-items");
         this.showModal = false
@@ -103,7 +103,7 @@ export default {
   computed: {
     modalData() {
       return {
-        infoMessage: `Are you sure you want to delete "${this.item.ItemName}"?`,
+        infoMessage: `Are you sure you want to delete "${this.item.item_name}"?`,
         confirmationText: 'Delete item',
         discardText: 'Cancel'
       }

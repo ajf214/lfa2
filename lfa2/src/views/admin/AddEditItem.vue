@@ -14,10 +14,10 @@
 
       <h3>Item preview</h3>
       <store-item class="item" v-if="cdnUrl !== ''" :item="{
-        Image: cdnUrl,
-        Sold: sold ? 'isSold' : false,
-        Url: firstDibsUrl,
-        ItemName: name
+        image: cdnUrl,
+        sold: sold,
+        url: firstDibsUrl,
+        item_name: name
       }"></store-item>
       <div v-else class="item-placeholder">
         <span>Fill in fields to generate item preview</span>
@@ -50,9 +50,9 @@ export default {
   },
   beforeMount() {
     if (this.itemForEdit !== undefined) {
-      this.name = this.itemForEdit.ItemName
-      this.sold = this.itemForEdit.Sold
-      this.firstDibsUrl = this.itemForEdit.Url
+      this.name = this.itemForEdit.item_name
+      this.sold = this.itemForEdit.sold
+      this.firstDibsUrl = this.itemForEdit.url
 
       this.scrapeFirstDibs()
     }
@@ -70,20 +70,21 @@ export default {
       async submitItem () {
           console.log('called submitItem')
           try {
-            let imageName = parseInt(this.item.Image)
+            let imageName = parseInt(this.item.image)
             
             // only increment if this is a new item
             if (this.itemForEdit === undefined) {
               // get latest image #, so I can increment it
               console.log("Getting next possible image ID...")
               const latestImageResponse = await axios.get(`${this.API_ENDPOINT}/latest-image-reference`)
-              imageName = (parseInt(latestImageResponse.data.Image) + 1)
+              imageName = (parseInt(latestImageResponse.data.image) + 1)
             }
 
             // upload image to cloudinary then
             // post request with item contents (name, imageNumber, sold, url)
             console.log('calling api')
-            await axios.post(`${this.API_ENDPOINT}/item`, { // todo - I think the ID should be in the POST url
+            await axios.post(`${this.API_ENDPOINT}/item`, {
+              id: this.itemForEdit ? this.itemForEdit.id : undefined,
               name: this.name,
               imageName: imageName,
               firstDibsUrl: this.firstDibsUrl,
@@ -103,10 +104,10 @@ export default {
   computed: {
     item: function () {
       return {
-        Image: this.cdnUrl,
-        ItemName: this.name,
-        Sold: this.sold,
-        Url: this.firstDibsUrl
+        image: this.cdnUrl,
+        item_name: this.name,
+        sold: this.sold,
+        url: this.firstDibsUrl
       }
     }
   },

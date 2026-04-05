@@ -12,11 +12,17 @@ param gitHash string
 param deploymentType string = 'dev'
 
 @secure()
-param dbPassword string
-
-@secure()
 @description('API key for image storage CDN (Cloudinary')
 param cloudinaryKey string
+
+@description('Fully qualified domain name of the PostgreSQL server')
+param postgresHost string
+
+@description('Resource ID of the user-assigned managed identity for the backend')
+param backendIdentityId string
+
+@description('Client ID of the user-assigned managed identity (used by @azure/identity)')
+param backendIdentityClientId string
 
 // todo -- use prereqs to create bicep registry and enable admin access
 resource acr 'Microsoft.ContainerRegistry/registries@2021-06-01-preview' existing = {
@@ -109,20 +115,24 @@ module backend 'http-container.bicep' = {
     minReplicas: 1
     env: [
       {
-        name: 'DB_USERNAME'
-        value: 'sonofdiesel'
+        name: 'DB_HOST'
+        value: postgresHost
       }
       {
-        name: 'DB_PASSWORD'
-        value: dbPassword
+        name: 'DB_NAME'
+        value: deploymentType == 'prod' ? 'lfa' : 'lfa_dev'
+      }
+      {
+        name: 'USE_MANAGED_IDENTITY'
+        value: 'true'
+      }
+      {
+        name: 'AZURE_CLIENT_ID'
+        value: backendIdentityClientId
       }
       {
         name: 'CLOUDINARY_API_SECRET'
         value: cloudinaryKey
-      }
-      {
-        name: 'DB'
-        value: deploymentType == 'prod' ? 'LFA' : 'LFA-DEV'
       }
       {
         name: 'IMAGE_FOLDER'
@@ -141,6 +151,7 @@ module backend 'http-container.bicep' = {
         value: 'https://lawrencefarmsantiques.com'
       }
     ]
+    userAssignedIdentityId: backendIdentityId
   }
 }
 
