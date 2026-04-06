@@ -17,7 +17,7 @@ async function createPool() {
     const { DefaultAzureCredential } = require('@azure/identity')
     const credential = new DefaultAzureCredential()
     const token = await credential.getToken('https://ossrdbms-aad.database.windows.net/.default')
-    baseConfig.user = process.env.AZURE_CLIENT_ID
+    baseConfig.user = process.env.AZURE_IDENTITY_NAME || 'lfa-backend-identity'
     baseConfig.password = token.token
     console.log('Auth mode: managed-identity')
   } else {
