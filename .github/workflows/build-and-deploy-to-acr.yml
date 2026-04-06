@@ -49,7 +49,6 @@ jobs:
 
     - name: 'Build with docker-compose and push to ACR'
       env:
-        LFA_DB_PASSWORD: ${{ secrets.LFA_DB_PASSWORD }}
         CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         GIT_HASH: ${{ env.GITHUB_SHA_SHORT }}
       run: | 
@@ -72,6 +71,9 @@ jobs:
     #     failOnStdErr: false
     - name: 'Deploy (using bicep-deploy)'
       uses: azure/bicep-deploy/@v1
+      env:
+        BACKEND_IDENTITY_ID: ${{ vars.BACKEND_IDENTITY_ID }}
+        BACKEND_IDENTITY_CLIENT_ID: ${{ vars.BACKEND_IDENTITY_CLIENT_ID }}
       with: 
         type: deploymentStack
         operation: create
