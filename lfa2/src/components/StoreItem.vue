@@ -1,16 +1,16 @@
 <template>
-  <a :href="item.Url" target="_blank" class="item-container">
-    <div :class="{unsold: item.Sold !== 'isSold'}" class="sold-tag">
+  <a :href="item.url" target="_blank" class="item-container">
+    <div :class="{unsold: item.sold !== true}" class="sold-tag">
       SOLD
     </div>
-    <img v-if="item.Image === 999" :src="`${rootImagePath}/1.jpg`" />
+    <img v-if="item.image === 999" :src="`${rootImagePath}/1.jpg`" />
     <img
-      v-else-if="item.Image.toString().length < 5"
-      :src="`${rootImagePath}/${item.Image}.jpg`"
+      v-else-if="item.image.toString().length < 5"
+      :src="`${rootImagePath}/${item.image}.jpg`"
     />
-    <img v-else :src="item.Image" />
+    <img v-else :src="item.image" />
     <!-- if it's not a short url, it's a full url -->
-    <h3>{{ item.ItemName }}</h3>
+    <h3>{{ item.item_name }}</h3>
   </a>
 </template>
 

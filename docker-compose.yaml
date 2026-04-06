@@ -14,9 +14,10 @@ services:
     image: lfa-front:${GIT_HASH}
     ports:
       - 80:80
+    env_file:
+      - ${ENV_FILE:-docker-compose.dev.env}
     environment:
       - VUE_APP_BASE_URL=http://localhost:3000
-      - VUE_APP_CLOUDINARY_DIR=lfa-items-test
   
   lfabackend:
     build:
@@ -28,7 +29,7 @@ services:
     env_file:
       - ${ENV_FILE:-docker-compose.dev.env}
     environment:
-      - DB_USERNAME=sonofdiesel
+      - DB_USERNAME=${LFA_DB_USERNAME}
       - DB_PASSWORD=${LFA_DB_PASSWORD}
       - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
       - GSUITE_CLIENT_ID=1092000076053-gskfckaqihntrefibkmlce55n7dvul2b

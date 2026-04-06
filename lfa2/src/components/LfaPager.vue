@@ -36,7 +36,7 @@ export default {
       const response = await axios.get(
         `${this.API_ENDPOINT}/all-items?unsold=${this.unsold}`
       );
-      this.itemCount = response.data.ItemCount;
+      this.itemCount = response.data.item_count;
     },
     calcPages: function (count) {
       // const itemsPerPage = 36

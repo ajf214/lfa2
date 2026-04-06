@@ -17,10 +17,17 @@ param containerRegistryPassword string
 
 param useCustomDomain bool = false
 param customDomain string = ''
+param userAssignedIdentityId string = ''
 
 resource containerApp 'Microsoft.App/containerApps@2025-07-01' = {
   name: containerAppName
   location: location
+  identity: !empty(userAssignedIdentityId) ? {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${userAssignedIdentityId}': {}
+    }
+  } : null
   properties: {
     managedEnvironmentId: environmentId
     configuration: {

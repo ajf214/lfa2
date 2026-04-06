@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cors = require('cors')
-const { pool, poolConnect, sql } = require('../db-interface')
+const { poolPromise } = require('../db-interface')
 const firstDibsScraper = require('../first-dibs-scraper')
 const imageUploader = require('../image-uploader')
 require('dotenv').config()
@@ -54,12 +54,10 @@ router.get('/version', (req, res, next) => {
 
 /* Do a GET to query the DB */
 router.get('/items', async (req, res, next) => {
-  // get page query param
   let page = req.query.page
   let sort = req.query.sort
   let unsold = req.query.unsold
 
-  // dynamically set itemsPerPage
   let itemsPerPage = req.query.itemsPerPage == undefined ? 36 : req.query.itemsPerPage
 
   if (page === undefined) {
@@ -74,43 +72,37 @@ router.get('/items', async (req, res, next) => {
     unsold = "false"
   }
 
-  const dbSort = sort === "recent" ? "Image" : "ItemName"
+  const dbSort = sort === "recent" ? "image" : "item_name"
+  const sortDir = dbSort === "item_name" ? "ASC" : "DESC"
+  const offset = (parseInt(page) - 1) * parseInt(itemsPerPage)
+
   const query = `
-    DECLARE @PageNumber AS INT, @RowspPage AS INT
-    SET @PageNumber = @p_page
-    SET @RowspPage = @p_itemsPerPage
-    SELECT ItemName, Url, CAST(Image AS INT) AS Image, Sold
-    FROM dbo.StoreItems
-    ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""}
-    ORDER BY ${dbSort} ${dbSort === "ItemName" ? "asc" : "desc"}
-    OFFSET ((@PageNumber - 1) * @RowspPage)
-    ROWS FETCH NEXT @RowspPage ROWS ONLY;`
+    SELECT id, item_name, url, image, sold
+    FROM store_items
+    ${unsold === 'true' ? "WHERE sold = FALSE" : ""}
+    ORDER BY ${dbSort} ${sortDir}
+    LIMIT $1 OFFSET $2`
 
   try {
-    await poolConnect
-    const result = await pool.request()
-      .input('p_page', sql.Int, parseInt(page))
-      .input('p_itemsPerPage', sql.Int, parseInt(itemsPerPage))
-      .query(query)
-    res.send(result.recordset)
+    const pool = await poolPromise
+    const result = await pool.query(query, [parseInt(itemsPerPage), offset])
+    res.send(result.rows)
   } catch (err) {
     console.log('Statement failed: ' + err)
     res.status(500).send(err)
   }
 })
 
-router.delete('/item/:image', async (req, res, next) => {
+router.delete('/item/:id', async (req, res, next) => {
   try {
     const authResult = await verify(req.query.token)
     if (!authResult.verified) {
       return res.status(403).send({ error: 'Unauthorized' })
     }
 
-    await poolConnect
-    const result = await pool.request()
-      .input('p_image', sql.NVarChar, req.params.image)
-      .query('DELETE FROM dbo.StoreItems WHERE Image=@p_image')
-    res.send(result.recordset)
+    const pool = await poolPromise
+    const result = await pool.query('DELETE FROM store_items WHERE id = $1', [parseInt(req.params.id)])
+    res.send({ deleted: result.rowCount })
   } catch (error) {
     console.log(error)
     res.status(403).send({ error: 'Unauthorized' })
@@ -124,14 +116,15 @@ router.get('/all-items', async (req, res, next) => {
     unsold = "false"
   }
 
-  const query = `select count(*) as ItemCount
-  from dbo.StoreItems
-  ${unsold === 'true' ? "WHERE Sold != 'isSold'" : ""}`
+  const query = `
+    SELECT COUNT(*) AS item_count
+    FROM store_items
+    ${unsold === 'true' ? "WHERE sold = FALSE" : ""}`
 
   try {
-    await poolConnect
-    const result = await pool.request().query(query)
-    res.send(result.recordset[0])
+    const pool = await poolPromise
+    const result = await pool.query(query)
+    res.send(result.rows[0])
   } catch (err) {
     console.log('Statement failed: ' + err)
     res.status(500).send(err)
@@ -140,7 +133,6 @@ router.get('/all-items', async (req, res, next) => {
 
 router.get('/get-hero-image', async (req, res, next) => {
   let url = req.query.url
-  // let itemName = req.query.itemName
 
   if (url === undefined) {
     res.send({ error: "NO_URL_PROVIDED" })
@@ -152,10 +144,9 @@ router.get('/get-hero-image', async (req, res, next) => {
 
 router.get('/latest-image-reference', async (req, res, next) => {
   try {
-    await poolConnect
-    const result = await pool.request()
-      .query('select top(1) * from dbo.StoreItems ORDER BY CONVERT(int, Image) desc')
-    res.send(result.recordset[0])
+    const pool = await poolPromise
+    const result = await pool.query('SELECT * FROM store_items ORDER BY image DESC LIMIT 1')
+    res.send(result.rows[0])
   } catch (err) {
     console.log('Statement failed: ' + err)
     res.status(500).send(err)
@@ -163,7 +154,6 @@ router.get('/latest-image-reference', async (req, res, next) => {
 })
 
 router.post('/token-signin', async (req, res, next) => {
-  // decrypt token
   try {
     const result = await verify(req.body.token)
 
@@ -176,45 +166,33 @@ router.post('/token-signin', async (req, res, next) => {
 })
 
 router.post('/item', async (req, res, next) => {
-
-  // decrypt token
   try {
     const authResult = await verify(req.body.token)
     if (!authResult.verified) {
       return res.status(403).send({ error: 'Unauthorized' })
     }
 
-    // upload image to cloudinary
     imageUploader.upload(req.body.cdnUrl, `${process.env.IMAGE_FOLDER}/${req.body.imageName}`, async (result) => {
-      const newQuery = `
-        SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-        BEGIN TRAN
-
-          IF EXISTS ( SELECT * FROM dbo.StoreItems WITH (UPDLOCK) WHERE ItemName = @p_name )
-
-            UPDATE dbo.StoreItems
-              SET Url=@p_firstDibsUrl,
-               Image=@p_imageName,
-               Sold=@p_sold,
-               DateAdded=GETDATE()
-            WHERE ItemName = @p_name;
-
-          ELSE
-            INSERT dbo.StoreItems (ItemName, Url, Image, Sold, DateAdded)
-          VALUES (@p_name, @p_firstDibsUrl, @p_imageName, @p_sold, GETDATE())
-
-        COMMIT
-      `
-
       try {
-        await poolConnect
-        const dbResult = await pool.request()
-          .input('p_name', sql.NVarChar, req.body.name)
-          .input('p_firstDibsUrl', sql.NVarChar, req.body.firstDibsUrl)
-          .input('p_imageName', sql.NVarChar, String(req.body.imageName))
-          .input('p_sold', sql.NVarChar, req.body.sold ? 'isSold' : null)
-          .query(newQuery)
-        res.send(dbResult.recordset)
+        const pool = await poolPromise
+        let dbResult
+
+        if (req.body.id) {
+          dbResult = await pool.query(
+            `UPDATE store_items
+             SET item_name = $1, url = $2, image = $3, sold = $4, date_added = NOW()
+             WHERE id = $5`,
+            [req.body.name, req.body.firstDibsUrl, req.body.imageName, !!req.body.sold, req.body.id]
+          )
+        } else {
+          dbResult = await pool.query(
+            `INSERT INTO store_items (item_name, url, image, sold, date_added)
+             VALUES ($1, $2, $3, $4, NOW())`,
+            [req.body.name, req.body.firstDibsUrl, req.body.imageName, !!req.body.sold]
+          )
+        }
+
+        res.send({ rowCount: dbResult.rowCount })
       } catch (err) {
         console.log(err)
         res.status(400).send(err)
@@ -224,33 +202,18 @@ router.post('/item', async (req, res, next) => {
 })
 
 router.post('/item/set-status', async (req, res, next) => {
-
-  // decrypt token
   try {
     const authResult = await verify(req.body.token)
     if (!authResult.verified) {
       return res.status(403).send({ error: 'Unauthorized' })
     }
 
-    const query = `
-          SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-          BEGIN TRAN
-
-            IF EXISTS ( SELECT * FROM dbo.StoreItems WITH (UPDLOCK) WHERE ItemName = @p_name )
-
-              UPDATE dbo.StoreItems
-                SET Sold=@p_newStatus
-              WHERE ItemName = @p_name;
-
-          COMMIT`
-
-    await poolConnect
-    const result = await pool.request()
-      .input('p_name', sql.NVarChar, req.body.name)
-      .input('p_newStatus', sql.NVarChar, req.body.newStatus)
-      .query(query)
-    res.send(result.recordset)
-
+    const pool = await poolPromise
+    const result = await pool.query(
+      'UPDATE store_items SET sold = $1 WHERE id = $2',
+      [req.body.newStatus === 'isSold', req.body.id]
+    )
+    res.send({ rowCount: result.rowCount })
   } catch (error) { console.log(error) }
 })
 
